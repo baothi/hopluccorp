@@ -1,0 +1,49 @@
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name="MediaCategory",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("slug", models.SlugField(max_length=100, unique=True)),
+                ("description", models.TextField(blank=True, default="")),
+            ],
+            options={
+                "verbose_name": "Media Category",
+                "verbose_name_plural": "Media Categories",
+                "db_table": "media_categories",
+                "ordering": ["name"],
+            },
+        ),
+        migrations.CreateModel(
+            name="MediaItem",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("title", models.CharField(max_length=255)),
+                ("image", models.ImageField(upload_to="media/images/")),
+                ("alt_text", models.CharField(blank=True, default="", max_length=255)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("category", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name="items", to="media.mediacategory")),
+                ("uploaded_by", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name="media_items", to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                "verbose_name": "Media Item",
+                "verbose_name_plural": "Media Items",
+                "db_table": "media_items",
+                "ordering": ["-created_at"],
+            },
+        ),
+    ]

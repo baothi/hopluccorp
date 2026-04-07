@@ -1,0 +1,162 @@
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("pages", "0004_rename_image_zh_aboutblock_image_zh_hans_and_more"),
+    ]
+
+    operations = [
+        # ==================== LeaderMessage ====================
+        migrations.CreateModel(
+            name="LeaderMessage",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("title", models.CharField(default="Thông điệp", max_length=100)),
+                ("title_vi", models.CharField(default="Thông điệp", max_length=100, null=True)),
+                ("title_en", models.CharField(default="Thông điệp", max_length=100, null=True)),
+                ("title_zh_hans", models.CharField(default="Thông điệp", max_length=100, null=True)),
+                ("title_ko", models.CharField(default="Thông điệp", max_length=100, null=True)),
+                ("subtitle", models.CharField(default="LÃNH ĐẠO", max_length=100)),
+                ("subtitle_vi", models.CharField(default="LÃNH ĐẠO", max_length=100, null=True)),
+                ("subtitle_en", models.CharField(default="LÃNH ĐẠO", max_length=100, null=True)),
+                ("subtitle_zh_hans", models.CharField(default="LÃNH ĐẠO", max_length=100, null=True)),
+                ("subtitle_ko", models.CharField(default="LÃNH ĐẠO", max_length=100, null=True)),
+                ("slogan", models.CharField(blank=True, default="", max_length=500)),
+                ("slogan_vi", models.CharField(blank=True, default="", max_length=500, null=True)),
+                ("slogan_en", models.CharField(blank=True, default="", max_length=500, null=True)),
+                ("slogan_zh_hans", models.CharField(blank=True, default="", max_length=500, null=True)),
+                ("slogan_ko", models.CharField(blank=True, default="", max_length=500, null=True)),
+                ("content", models.TextField(blank=True, default="", help_text="Nội dung thư ngỏ (HTML)")),
+                ("content_vi", models.TextField(blank=True, default="", help_text="Nội dung thư ngỏ (HTML)", null=True)),
+                ("content_en", models.TextField(blank=True, default="", help_text="Nội dung thư ngỏ (HTML)", null=True)),
+                ("content_zh_hans", models.TextField(blank=True, default="", help_text="Nội dung thư ngỏ (HTML)", null=True)),
+                ("content_ko", models.TextField(blank=True, default="", help_text="Nội dung thư ngỏ (HTML)", null=True)),
+                ("leader_image", models.ImageField(blank=True, upload_to="about/leader/")),
+                ("leader_name", models.CharField(blank=True, default="", max_length=255)),
+                ("leader_name_vi", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_name_en", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_name_zh_hans", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_name_ko", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_position", models.CharField(blank=True, default="", max_length=255)),
+                ("leader_position_vi", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_position_en", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_position_zh_hans", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("leader_position_ko", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("signature_image", models.ImageField(blank=True, upload_to="about/leader/")),
+            ],
+            options={
+                "verbose_name": "⑧ Thông điệp lãnh đạo",
+                "verbose_name_plural": "⑧ Thông điệp lãnh đạo",
+                "db_table": "pages_leader_message",
+            },
+        ),
+        # ==================== HistoryItem ====================
+        migrations.CreateModel(
+            name="HistoryItem",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("order", models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order")),
+                ("year", models.CharField(max_length=10)),
+                ("image", models.ImageField(blank=True, upload_to="about/history/")),
+                ("description", models.TextField(blank=True, default="")),
+                ("description_vi", models.TextField(blank=True, default="", null=True)),
+                ("description_en", models.TextField(blank=True, default="", null=True)),
+                ("description_zh_hans", models.TextField(blank=True, default="", null=True)),
+                ("description_ko", models.TextField(blank=True, default="", null=True)),
+                ("is_active", models.BooleanField(default=True)),
+            ],
+            options={
+                "verbose_name": "⑨ Lịch sử",
+                "verbose_name_plural": "⑨ Lịch sử hình thành (Timeline)",
+                "db_table": "pages_history_items",
+                "ordering": ["order"],
+                "abstract": False,
+            },
+        ),
+        # ==================== CoreValue ====================
+        migrations.CreateModel(
+            name="CoreValue",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("order", models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order")),
+                ("icon", models.ImageField(blank=True, upload_to="about/core-values/")),
+                ("title", models.CharField(max_length=100)),
+                ("title_vi", models.CharField(max_length=100, null=True)),
+                ("title_en", models.CharField(max_length=100, null=True)),
+                ("title_zh_hans", models.CharField(max_length=100, null=True)),
+                ("title_ko", models.CharField(max_length=100, null=True)),
+                ("is_active", models.BooleanField(default=True)),
+            ],
+            options={
+                "verbose_name": "⑩ Giá trị cốt lõi",
+                "verbose_name_plural": "⑩ Giá trị cốt lõi",
+                "db_table": "pages_core_values",
+                "ordering": ["order"],
+                "abstract": False,
+            },
+        ),
+        # ==================== VisionMission ====================
+        migrations.CreateModel(
+            name="VisionMission",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("vision_title", models.CharField(default="Tầm nhìn", max_length=100)),
+                ("vision_title_vi", models.CharField(default="Tầm nhìn", max_length=100, null=True)),
+                ("vision_title_en", models.CharField(default="Tầm nhìn", max_length=100, null=True)),
+                ("vision_title_zh_hans", models.CharField(default="Tầm nhìn", max_length=100, null=True)),
+                ("vision_title_ko", models.CharField(default="Tầm nhìn", max_length=100, null=True)),
+                ("vision_content", models.TextField(blank=True, default="")),
+                ("vision_content_vi", models.TextField(blank=True, default="", null=True)),
+                ("vision_content_en", models.TextField(blank=True, default="", null=True)),
+                ("vision_content_zh_hans", models.TextField(blank=True, default="", null=True)),
+                ("vision_content_ko", models.TextField(blank=True, default="", null=True)),
+                ("vision_image", models.ImageField(blank=True, upload_to="about/vision/")),
+                ("mission_title", models.CharField(default="Sứ mệnh", max_length=100)),
+                ("mission_title_vi", models.CharField(default="Sứ mệnh", max_length=100, null=True)),
+                ("mission_title_en", models.CharField(default="Sứ mệnh", max_length=100, null=True)),
+                ("mission_title_zh_hans", models.CharField(default="Sứ mệnh", max_length=100, null=True)),
+                ("mission_title_ko", models.CharField(default="Sứ mệnh", max_length=100, null=True)),
+                ("mission_content", models.TextField(blank=True, default="")),
+                ("mission_content_vi", models.TextField(blank=True, default="", null=True)),
+                ("mission_content_en", models.TextField(blank=True, default="", null=True)),
+                ("mission_content_zh_hans", models.TextField(blank=True, default="", null=True)),
+                ("mission_content_ko", models.TextField(blank=True, default="", null=True)),
+                ("mission_image", models.ImageField(blank=True, upload_to="about/mission/")),
+            ],
+            options={
+                "verbose_name": "⑪ Tầm nhìn & Sứ mệnh",
+                "verbose_name_plural": "⑪ Tầm nhìn & Sứ mệnh",
+                "db_table": "pages_vision_mission",
+            },
+        ),
+        # ==================== LeadershipMember ====================
+        migrations.CreateModel(
+            name="LeadershipMember",
+            fields=[
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("order", models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order")),
+                ("name", models.CharField(max_length=255)),
+                ("name_vi", models.CharField(max_length=255, null=True)),
+                ("name_en", models.CharField(max_length=255, null=True)),
+                ("name_zh_hans", models.CharField(max_length=255, null=True)),
+                ("name_ko", models.CharField(max_length=255, null=True)),
+                ("position", models.CharField(blank=True, default="", max_length=255)),
+                ("position_vi", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("position_en", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("position_zh_hans", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("position_ko", models.CharField(blank=True, default="", max_length=255, null=True)),
+                ("image", models.ImageField(blank=True, upload_to="about/leadership/")),
+                ("is_active", models.BooleanField(default=True)),
+            ],
+            options={
+                "verbose_name": "⑫ Ban lãnh đạo",
+                "verbose_name_plural": "⑫ Ban lãnh đạo",
+                "db_table": "pages_leadership_members",
+                "ordering": ["order"],
+                "abstract": False,
+            },
+        ),
+    ]

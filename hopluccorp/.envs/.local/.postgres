@@ -1,0 +1,7 @@
+# PostgreSQL
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=hopluccorp
+POSTGRES_USER=hopluccorp_dev
+POSTGRES_PASSWORD=hopluccorp_dev_password
+DATABASE_URL=postgres://hopluccorp_dev:hopluccorp_dev_password@postgres:5432/hopluccorp

@@ -1,0 +1,48 @@
+volumes:
+  hopluccorp_production_postgres_data: {}
+  hopluccorp_production_media: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: hopluccorp_production_django
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - hopluccorp_production_media:/app/hopluccorp/media
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: hopluccorp_production_postgres
+    volumes:
+      - hopluccorp_production_postgres_data:/var/lib/postgresql/data
+      - ./compose/production/postgres/maintenance:/maintenance
+    env_file:
+      - ./.envs/.production/.postgres
+
+  redis:
+    image: redis:7
+
+  celeryworker:
+    <<: *django
+    image: hopluccorp_production_celeryworker
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: hopluccorp_production_celerybeat
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: hopluccorp_production_flower
+    command: /start-flower

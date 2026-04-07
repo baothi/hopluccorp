@@ -1,0 +1,34 @@
+.lang-tabs-bar {
+    display: flex;
+    gap: 0;
+    margin: 0 0 20px;
+    padding: 0;
+    border-bottom: 3px solid #417690;
+}
+
+.lang-tab {
+    padding: 10px 24px;
+    background: #f1f1f1;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: -3px;
+    margin-right: 2px;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s ease;
+    outline: none;
+}
+
+.lang-tab:hover {
+    background: #e2e2e2;
+    color: #417690;
+}
+
+.lang-tab.active {
+    background: #417690;
+    color: #fff;
+    border-color: #417690;
+}

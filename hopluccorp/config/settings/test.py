@@ -1,0 +1,6 @@
+from .base import *  # noqa: F403
+
+SECRET_KEY = "test-secret-key-not-for-production"
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"

@@ -1,0 +1,16 @@
+.git
+.gitignore
+.dockerignore
+.envs/.production/
+*.pyc
+__pycache__
+*.egg-info
+.mypy_cache
+.pytest_cache
+.coverage
+htmlcov
+.venv
+venv
+node_modules
+*.md
+docs/

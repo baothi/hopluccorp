@@ -1,0 +1,118 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.lang-tabs-bar {
+    display: flex;
+    gap: 0;
+    margin: 10px 0 15px;
+    padding: 0;
+    border-bottom: 3px solid #417690;
+}
+.lang-tab {
+    padding: 8px 22px;
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: -3px;
+    margin-right: 2px;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s ease;
+    outline: none;
+}
+.lang-tab:hover { background: #e2e2e2; color: #417690; }
+.lang-tab.active { background: #417690; color: #fff; border-color: #417690; }
+</style>
+{% endblock %}
+
+{% block after_field_sets %}
+{{ block.super }}
+<script>
+(function($) {
+    'use strict';
+
+    var LANGS = [
+        {code: 'vi', label: 'Tiếng Việt'},
+        {code: 'en', label: 'English'},
+        {code: 'zh_hans', label: '中文'},
+        {code: 'ko', label: '한국어'}
+    ];
+    var SUFFIXES = LANGS.map(function(l) { return '_' + l.code; });
+
+    $(document).ready(function() {
+        var langRows = {};
+        LANGS.forEach(function(l) { langRows[l.code] = []; });
+
+        // Find all form rows with translation field classes
+        $('.form-row').each(function() {
+            var $row = $(this);
+            var classes = ($row.attr('class') || '').split(/\s+/);
+
+            for (var c = 0; c < classes.length; c++) {
+                var cls = classes[c];
+                if (cls.indexOf('field-') !== 0) continue;
+
+                for (var i = 0; i < SUFFIXES.length; i++) {
+                    var suf = SUFFIXES[i];
+                    if (cls.length > ('field-' + suf).length && cls.slice(-suf.length) === suf) {
+                        langRows[LANGS[i].code].push($row);
+                        return; // break out of .each callback for this row
+                    }
+                }
+            }
+        });
+
+        // Check if any translation fields exist
+        var total = 0;
+        LANGS.forEach(function(l) { total += langRows[l.code].length; });
+        if (total === 0) return;
+
+        // Build tab bar
+        var $tabBar = $('<div class="lang-tabs-bar"></div>');
+        LANGS.forEach(function(lang, i) {
+            var $btn = $('<button type="button" class="lang-tab"></button>')
+                .text(lang.label)
+                .attr('data-lang', lang.code);
+            if (i === 0) $btn.addClass('active');
+            $tabBar.append($btn);
+        });
+
+        // Insert before first fieldset
+        var $target = $('fieldset:first');
+        if ($target.length) {
+            $target.before($tabBar);
+        }
+
+        // Switch language
+        function switchLang(code) {
+            LANGS.forEach(function(lang) {
+                var show = (lang.code === code);
+                langRows[lang.code].forEach(function($row) {
+                    if (show) {
+                        $row.show();
+                    } else {
+                        $row.hide();
+                    }
+                });
+            });
+        }
+
+        // Tab click
+        $tabBar.on('click', '.lang-tab', function(e) {
+            e.preventDefault();
+            $tabBar.find('.lang-tab').removeClass('active');
+            $(this).addClass('active');
+            switchLang($(this).data('lang'));
+        });
+
+        // Default: show Vietnamese
+        switchLang('vi');
+    });
+})(django.jQuery);
+</script>
+{% endblock %}

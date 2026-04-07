@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(test:*)",
+      "Bash(docker compose -f local.yml build django)",
+      "Bash(docker compose:*)",
+      "Bash(python -c:*)",
+      "Bash(echo:*)",
+      "Bash(findstr:*)"
+    ]
+  }
+}

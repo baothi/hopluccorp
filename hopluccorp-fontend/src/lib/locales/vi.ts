@@ -1,0 +1,69 @@
+const vi = {
+  // Stats Section
+  'stats.title1': 'Những con số',
+  'stats.title2': 'Ấn tượng',
+
+  // Partner Section
+  'partner.title': 'Đối tác',
+  'partner.highlight': 'Khách hàng',
+
+  // News Section
+  'news.title': 'Tin tức',
+  'news.readMore': 'Tìm hiểu thêm',
+
+  // Footer
+  'footer.follow': 'Follow Hợp Lực',
+  'footer.headquarters': 'TRỤ SỞ',
+  'footer.hcmOffice': 'VĂN PHÒNG HỒ CHÍ MINH',
+  'footer.contact': 'Liên hệ',
+  'footer.recruitment': 'TUYỂN DỤNG',
+
+  // Header / Sidebar
+  'search.placeholder': 'Tìm kiếm...',
+  'menu.memberCompanies': 'CÔNG TY THÀNH VIÊN',
+  'menu.about': 'GIỚI THIỆU',
+  'menu.structure': 'CƠ CẤU TỔ CHỨC',
+  'menu.resources': 'NGUỒN LỰC',
+  'menu.projects': 'DỰ ÁN',
+  'menu.sectors': 'LĨNH VỰC HOẠT ĐỘNG',
+  'menu.sectors.construction': 'Tổng thầu Xây dựng',
+  'menu.sectors.mne': 'Tổng thầu cơ điện',
+  'menu.sectors.interior': 'Hoàn thiện nội thất',
+  'menu.sectors.materials': 'Vật liệu xây dựng',
+  'menu.sectors.industrial': 'Công nghiệp phụ trợ',
+  'menu.news': 'TIN TỨC',
+  'menu.partners': 'ĐỐI TÁC',
+  'menu.achievements': 'THÀNH TỰU',
+  'menu.careers': 'TUYỂN DỤNG',
+  'menu.contact': 'LIÊN HỆ',
+
+  // About Page
+  'about.history': 'LỊCH SỬ',
+  'about.historyHighlight': 'HÌNH THÀNH',
+  'about.historyYear': 'Năm',
+  'about.coreValues': 'Giá trị cốt lõi',
+  'about.leadership': 'Ban lãnh đạo',
+
+  // Contact Page
+  'contact.title': 'THÔNG TIN',
+  'contact.titleHighlight': 'LIÊN HỆ',
+  'contact.description': 'Hãy liên hệ với chúng tôi nếu bạn cần hỗ trợ hoặc có bất kỳ câu hỏi nào.',
+  'contact.headquarters': 'Trụ sở chính',
+  'contact.hcmOffice': 'Văn phòng HCM',
+  'contact.phone': 'Điện thoại',
+  'contact.email': 'Email',
+  'contact.formTitle': 'GỬI CÂU HỎI',
+  'contact.formDescription': 'Vui lòng điền thông tin bên dưới, chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
+  'contact.name': 'Họ và tên',
+  'contact.namePlaceholder': 'Nhập họ và tên',
+  'contact.emailPlaceholder': 'Nhập email',
+  'contact.phonePlaceholder': 'Nhập số điện thoại',
+  'contact.message': 'Nội dung',
+  'contact.messagePlaceholder': 'Nhập nội dung tin nhắn...',
+  'contact.submit': 'Gửi liên hệ',
+  'contact.sending': 'Đang gửi...',
+  'contact.success': 'Gửi liên hệ thành công! Chúng tôi sẽ phản hồi sớm nhất.',
+  'contact.error': 'Gửi thất bại. Vui lòng thử lại sau.',
+};
+
+export default vi;
