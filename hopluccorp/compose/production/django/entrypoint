@@ -3,23 +3,42 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-python << END
+# Wait for PostgreSQL
+# Supports both DATABASE_URL (Dokku) and individual POSTGRES_* vars (Docker Compose)
+python << 'END'
 import sys
 import time
-import psycopg
+import os
 
 suggest_unrecoverable_after = 30
 start = time.time()
 
+database_url = os.environ.get("DATABASE_URL", "")
+
+if database_url:
+    from urllib.parse import urlparse
+    parsed = urlparse(database_url)
+    db_params = {
+        "dbname": parsed.path.lstrip("/"),
+        "user": parsed.username or "",
+        "password": parsed.password or "",
+        "host": parsed.hostname or "localhost",
+        "port": str(parsed.port or 5432),
+    }
+else:
+    db_params = {
+        "dbname": os.environ.get("POSTGRES_DB", ""),
+        "user": os.environ.get("POSTGRES_USER", ""),
+        "password": os.environ.get("POSTGRES_PASSWORD", ""),
+        "host": os.environ.get("POSTGRES_HOST", "localhost"),
+        "port": os.environ.get("POSTGRES_PORT", "5432"),
+    }
+
+import psycopg
+
 while True:
     try:
-        psycopg.connect(
-            dbname="${POSTGRES_DB}",
-            user="${POSTGRES_USER}",
-            password="${POSTGRES_PASSWORD}",
-            host="${POSTGRES_HOST}",
-            port="${POSTGRES_PORT}",
-        )
+        psycopg.connect(**db_params)
         break
     except psycopg.OperationalError as error:
         sys.stderr.write("Waiting for PostgreSQL to become available...\n")

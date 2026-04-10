@@ -1,0 +1,21 @@
+# Copy this file to terraform.tfvars and fill in your values
+# terraform.tfvars is gitignored — NEVER commit it
+
+dokku_host           = "167.172.118.162"
+ssh_private_key_path = "~/.ssh/id_rsa"
+
+# Domains
+api_domain = "hoplucapi.verde.vn"
+web_domain = "hopluc.verde.vn"
+
+# Django
+django_secret_key = "CHANGE-ME-generate-with-python-c-from-django-core-management-utils-import-get-random-secret-key-print-get-random-secret-key"
+django_admin_url  = "hlc-admin/"
+
+# Cloudinary
+cloudinary_cloud_name = ""
+cloudinary_api_key    = ""
+cloudinary_api_secret = ""
+
+# Sentry (optional)
+sentry_dsn = ""
