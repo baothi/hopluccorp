@@ -21,7 +21,7 @@ export default function PartnersPage() {
 
       <main className="relative">
         {/* Section 1: Banner Slider - dùng lại từ trang chủ */}
-        <BannerSection />
+        <BannerSection banners={[]} />
 
         {/* Section 2: Đối tác quốc tế */}
         <PartnersSection

@@ -10,28 +10,29 @@ echo "========================================"
 echo " HopLucCorp — Dokku Setup"
 echo "========================================"
 
-# ---- 1. Install plugins if not present ----
+# ---- 1. Check plugins (already installed on this server) ----
 echo "[1/7] Checking Dokku plugins..."
 
-if ! dokku plugin:list | grep -q "postgres"; then
+PLUGINS=$(dokku plugin:list 2>/dev/null || true)
+if echo "$PLUGINS" | grep -q "postgres"; then
+  echo "  dokku-postgres already installed"
+else
   echo "  Installing dokku-postgres..."
   dokku plugin:install https://github.com/dokku/dokku-postgres.git postgres
-else
-  echo "  dokku-postgres already installed"
 fi
 
-if ! dokku plugin:list | grep -q "redis"; then
+if echo "$PLUGINS" | grep -q "redis"; then
+  echo "  dokku-redis already installed"
+else
   echo "  Installing dokku-redis..."
   dokku plugin:install https://github.com/dokku/dokku-redis.git redis
-else
-  echo "  dokku-redis already installed"
 fi
 
-if ! dokku plugin:list | grep -q "letsencrypt"; then
+if echo "$PLUGINS" | grep -q "letsencrypt"; then
+  echo "  dokku-letsencrypt already installed"
+else
   echo "  Installing dokku-letsencrypt..."
   dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
-else
-  echo "  dokku-letsencrypt already installed"
 fi
 
 # ---- 2. Create apps ----

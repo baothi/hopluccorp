@@ -7,7 +7,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 interface Props {
-  banners: { id: number; image: string; alt: string }[];
+  banners?: { id: number; image: string; alt: string }[];
 }
 
 export default function BannerSection({ banners = [] }: Props) {

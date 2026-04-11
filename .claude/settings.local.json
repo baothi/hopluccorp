@@ -8,7 +8,8 @@
       "Bash(docker compose:*)",
       "Bash(python -c:*)",
       "Bash(echo:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(openssl rand:*)"
     ]
   }
 }

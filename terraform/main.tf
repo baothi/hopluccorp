@@ -14,19 +14,19 @@ terraform {
 # ==============================================================
 resource "null_resource" "dokku_setup" {
   triggers = {
-    # Re-run if these change
-    api_app   = var.api_app_name
-    web_app   = var.web_app_name
-    db_name   = var.db_name
+    api_app    = var.api_app_name
+    web_app    = var.web_app_name
+    db_name    = var.db_name
     redis_name = var.redis_name
-    host      = var.dokku_host
+    host       = var.dokku_host
+    ssh_key    = file(pathexpand(var.ssh_private_key_path))
   }
 
   connection {
     type        = "ssh"
-    host        = var.dokku_host
+    host        = self.triggers.host
     user        = "root"
-    private_key = file(pathexpand(var.ssh_private_key_path))
+    private_key = self.triggers.ssh_key
     timeout     = "2m"
   }
 
