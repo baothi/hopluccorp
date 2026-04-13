@@ -189,10 +189,10 @@ export const navigationItems: NavigationItem[] = [
 
 // ========== LANGUAGES ==========
 export const languages: Language[] = [
-  { code: 'vi', label: 'VIE', flag: 'https://hopluccorp.vn/wp-content/themes/theme/dist/images/vi.png' },
-  { code: 'en', label: 'EN', flag: 'https://hopluccorp.vn/wp-content/themes/theme/dist/images/en.png' },
-  { code: 'zh', label: 'CN', flag: 'https://hopluccorp.vn/wp-content/themes/theme/dist/images/zh.png' },
-  { code: 'ko', label: 'KR', flag: 'https://hopluccorp.vn/wp-content/uploads/2025/11/ko.png' },
+  { code: 'vi', label: 'VIE', flag: '/flags/vi.png' },
+  { code: 'en', label: 'EN', flag: '/flags/en.png' },
+  { code: 'zh', label: 'CN', flag: '/flags/zh.png' },
+  { code: 'ko', label: 'KR', flag: '/flags/ko.png' },
 ];
 
 // ========== LOGOS & ASSETS ==========

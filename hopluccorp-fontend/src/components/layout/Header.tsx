@@ -3,6 +3,7 @@
 import { languages, logos, contactInfo } from '@/lib/data/homepage';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -72,11 +73,15 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
                   : "border-white/50 hover:bg-white/10 text-white"
               )}
             >
-              <img
-                src={currentLanguage?.flag || 'https://hopluccorp.vn/wp-content/themes/theme/dist/images/vi.png'}
-                alt={currentLanguage?.label || 'VIE'}
-                className="w-5 h-3.5 object-cover"
-              />
+              <span className="relative w-5 h-3.5 shrink-0">
+                <Image
+                  src={currentLanguage?.flag || '/flags/vi.png'}
+                  alt={currentLanguage?.label || 'VIE'}
+                  fill
+                  sizes="20px"
+                  className="object-cover"
+                />
+              </span>
               <span className="font-medium text-sm">
                 {currentLanguage?.label}
               </span>
@@ -100,11 +105,15 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
                       currentLang === lang.code && "bg-gray-50"
                     )}
                   >
-                    <img
-                      src={lang.flag}
-                      alt={lang.label}
-                      className="w-5 h-3.5 object-cover"
-                    />
+                    <span className="relative w-5 h-3.5 shrink-0">
+                      <Image
+                        src={lang.flag}
+                        alt={lang.label}
+                        fill
+                        sizes="20px"
+                        className="object-cover"
+                      />
+                    </span>
                     <span className="text-sm text-gray-900">{lang.label}</span>
                   </button>
                 ))}
@@ -117,10 +126,13 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
             href={`/${currentLang}`}
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
-            <img
+            <Image
               src={logos.header}
               alt="Hợp Lực"
-              className="h-14 md:h-16 w-auto"
+              width={120}
+              height={56}
+              className="h-10 w-auto md:h-14"
+              priority
             />
           </Link>
 
