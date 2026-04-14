@@ -37,6 +37,20 @@ const vi = {
   'menu.careers': 'TUYỂN DỤNG',
   'menu.contact': 'LIÊN HỆ',
 
+  // Projects Page
+  'projects.all': 'Tất cả',
+  'projects.searchPlaceholder': 'Nhập tên dự án',
+  'projects.location': 'Vị trí',
+  'projects.time': 'Thời gian',
+  'projects.progress': 'Tiến độ',
+  'projects.search': 'Tìm kiếm',
+  'projects.ongoing': 'Đang thực hiện',
+  'projects.completed': 'Hoàn thành',
+  'projects.noResults': 'Không tìm thấy dự án nào phù hợp',
+  'projects.clearFilter': 'Xóa bộ lọc',
+  'projects.loadMore': 'Xem thêm',
+  'projects.scale': 'Quy mô',
+
   // About Page
   'about.history': 'LỊCH SỬ',
   'about.historyHighlight': 'HÌNH THÀNH',

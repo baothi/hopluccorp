@@ -37,6 +37,20 @@ const zh = {
   'menu.careers': '招聘',
   'menu.contact': '联系',
 
+  // Projects Page
+  'projects.all': '全部',
+  'projects.searchPlaceholder': '输入项目名称',
+  'projects.location': '位置',
+  'projects.time': '时间',
+  'projects.progress': '进度',
+  'projects.search': '搜索',
+  'projects.ongoing': '进行中',
+  'projects.completed': '已完成',
+  'projects.noResults': '未找到符合条件的项目',
+  'projects.clearFilter': '清除筛选',
+  'projects.loadMore': '查看更多',
+  'projects.scale': '规模',
+
   // About Page
   'about.history': '历史',
   'about.historyHighlight': '发展历程',

@@ -37,6 +37,20 @@ const ko = {
   'menu.careers': '채용',
   'menu.contact': '연락처',
 
+  // Projects Page
+  'projects.all': '전체',
+  'projects.searchPlaceholder': '프로젝트명 입력',
+  'projects.location': '위치',
+  'projects.time': '연도',
+  'projects.progress': '진행률',
+  'projects.search': '검색',
+  'projects.ongoing': '진행 중',
+  'projects.completed': '완료',
+  'projects.noResults': '조건에 맞는 프로젝트가 없습니다',
+  'projects.clearFilter': '필터 초기화',
+  'projects.loadMore': '더 보기',
+  'projects.scale': '규모',
+
   // About Page
   'about.history': '역사',
   'about.historyHighlight': '발전과정',

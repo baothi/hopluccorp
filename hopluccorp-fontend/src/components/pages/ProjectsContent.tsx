@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchProjects } from '@/store/projects/projectsSlice';
 import { safeImg } from '@/lib/utils/safeImg';
+import { t } from '@/lib/i18n';
 import * as fallback from '@/lib/data/projectspage';
 import type { Project } from '@/lib/data/projectspage';
 
@@ -55,7 +56,7 @@ export default function ProjectsContent({ locale }: Props) {
       <Header />
       <VerticalPagination totalSections={3} />
 
-      <main className="relative">
+      <main className="relative pt-[72px] md:pt-[88px]">
         <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px]">
           <BannerSection
             banners={[{ id: 1, image: fallback.projectsBanner.image, alt: 'Dự án Hợp Lực' }]}
@@ -83,33 +84,34 @@ interface ProjectsListProps {
 }
 
 function ProjectsListSection({ categories, projectsList, locale }: ProjectsListProps) {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const ALL = 'all';
+  const [activeCategory, setActiveCategory] = useState(ALL);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('Tất cả');
-  const [selectedYear, setSelectedYear] = useState('Tất cả');
-  const [selectedProgress, setSelectedProgress] = useState('Tất cả');
+  const [selectedLocation, setSelectedLocation] = useState(ALL);
+  const [selectedYear, setSelectedYear] = useState(ALL);
+  const [selectedProgress, setSelectedProgress] = useState(ALL);
   const [visibleCount, setVisibleCount] = useState(9);
 
   // Extract unique locations and years from data
   const locations = useMemo(() => {
     const locs = new Set(projectsList.map((p) => p.location).filter(Boolean));
-    return ['Tất cả', ...Array.from(locs).sort()];
+    return [ALL, ...Array.from(locs).sort()];
   }, [projectsList]);
 
   const years = useMemo(() => {
     const yrs = new Set(projectsList.map((p) => p.year).filter(Boolean));
-    return ['Tất cả', ...Array.from(yrs).sort((a, b) => b.localeCompare(a))];
+    return [ALL, ...Array.from(yrs).sort((a, b) => b.localeCompare(a))];
   }, [projectsList]);
 
   const filteredProjects = useMemo(() => {
     return projectsList.filter((project) => {
-      if (activeCategory !== 'all' && project.category !== activeCategory) return false;
+      if (activeCategory !== ALL && project.category !== activeCategory) return false;
       if (searchKeyword && !project.name.toLowerCase().includes(searchKeyword.toLowerCase())) return false;
-      if (selectedLocation !== 'Tất cả' && project.location !== selectedLocation) return false;
-      if (selectedYear !== 'Tất cả' && project.year !== selectedYear) return false;
-      if (selectedProgress !== 'Tất cả') {
-        if (selectedProgress === 'Đang thực hiện' && project.status !== 'ongoing') return false;
-        if (selectedProgress === 'Hoàn thành' && project.status !== 'completed') return false;
+      if (selectedLocation !== ALL && project.location !== selectedLocation) return false;
+      if (selectedYear !== ALL && project.year !== selectedYear) return false;
+      if (selectedProgress !== ALL) {
+        if (selectedProgress === 'ongoing' && project.status !== 'ongoing') return false;
+        if (selectedProgress === 'completed' && project.status !== 'completed') return false;
       }
       return true;
     });
@@ -119,11 +121,11 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
   const remainingProjects = filteredProjects.slice(3, 3 + visibleCount);
 
   const resetFilters = () => {
-    setActiveCategory('all');
+    setActiveCategory(ALL);
     setSearchKeyword('');
-    setSelectedLocation('Tất cả');
-    setSelectedYear('Tất cả');
-    setSelectedProgress('Tất cả');
+    setSelectedLocation(ALL);
+    setSelectedYear(ALL);
+    setSelectedProgress(ALL);
     setVisibleCount(9);
   };
 
@@ -158,7 +160,7 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
-                placeholder="Nhập tên dự án"
+                placeholder={t(locale, 'projects.searchPlaceholder')}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 className="w-full px-4 py-3 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -171,7 +173,7 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
               className="px-4 py-3 bg-gray-700 text-white border-0 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[150px]"
             >
               {locations.map((loc) => (
-                <option key={loc} value={loc}>{loc === 'Tất cả' ? 'Vị trí' : loc}</option>
+                <option key={loc} value={loc}>{loc === ALL ? t(locale, 'projects.location') : loc}</option>
               ))}
             </select>
 
@@ -181,7 +183,7 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
               className="px-4 py-3 bg-gray-700 text-white border-0 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[150px]"
             >
               {years.map((year) => (
-                <option key={year} value={year}>{year === 'Tất cả' ? 'Thời gian' : year}</option>
+                <option key={year} value={year}>{year === ALL ? t(locale, 'projects.time') : year}</option>
               ))}
             </select>
 
@@ -190,16 +192,16 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
               onChange={(e) => setSelectedProgress(e.target.value)}
               className="px-4 py-3 bg-gray-700 text-white border-0 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[150px]"
             >
-              {fallback.projectProgress.map((prog) => (
-                <option key={prog} value={prog}>{prog === 'Tất cả' ? 'Tiến độ' : prog}</option>
-              ))}
+              <option value={ALL}>{t(locale, 'projects.progress')}</option>
+              <option value="ongoing">{t(locale, 'projects.ongoing')}</option>
+              <option value="completed">{t(locale, 'projects.completed')}</option>
             </select>
 
             <button
               onClick={() => {}}
               className="px-8 py-3 bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
             >
-              Tìm kiếm
+              {t(locale, 'projects.search')}
             </button>
           </div>
         </FadeIn>
@@ -241,12 +243,12 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
               <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-gray-500 text-lg">Không tìm thấy dự án nào phù hợp</p>
+              <p className="text-gray-500 text-lg">{t(locale, 'projects.noResults')}</p>
               <button
                 onClick={resetFilters}
                 className="mt-4 px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
               >
-                Xóa bộ lọc
+                {t(locale, 'projects.clearFilter')}
               </button>
             </div>
           </FadeIn>
@@ -260,7 +262,7 @@ function ProjectsListSection({ categories, projectsList, locale }: ProjectsListP
                 onClick={() => setVisibleCount((prev) => prev + 9)}
                 className="px-8 py-3 bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
               >
-                Xem thêm ({filteredProjects.length - visibleCount - 3} dự án)
+                {t(locale, 'projects.loadMore')} ({filteredProjects.length - visibleCount - 3})
               </button>
             </div>
           </FadeIn>
@@ -326,7 +328,7 @@ function ProjectCardHover({
               </svg>
             </div>
             <div>
-              <p className="text-white/80 text-xs font-medium">Quy mô</p>
+              <p className="text-white/80 text-xs font-medium">{t(locale, 'projects.scale')}</p>
               <p className="text-white font-semibold text-sm drop-shadow">{project.scale}</p>
             </div>
           </div>
@@ -343,7 +345,7 @@ function ProjectCardHover({
               </svg>
             </div>
             <div>
-              <p className="text-white/80 text-xs font-medium">Tiến độ</p>
+              <p className="text-white/80 text-xs font-medium">{t(locale, 'projects.progress')}</p>
               <p className="text-white font-semibold text-sm whitespace-pre-line drop-shadow">{project.progress}</p>
             </div>
           </div>

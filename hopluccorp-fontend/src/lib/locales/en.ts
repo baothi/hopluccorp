@@ -37,6 +37,20 @@ const en = {
   'menu.careers': 'CAREERS',
   'menu.contact': 'CONTACT',
 
+  // Projects Page
+  'projects.all': 'All',
+  'projects.searchPlaceholder': 'Enter project name',
+  'projects.location': 'Location',
+  'projects.time': 'Year',
+  'projects.progress': 'Progress',
+  'projects.search': 'Search',
+  'projects.ongoing': 'Ongoing',
+  'projects.completed': 'Completed',
+  'projects.noResults': 'No projects found',
+  'projects.clearFilter': 'Clear filters',
+  'projects.loadMore': 'Load more',
+  'projects.scale': 'Scale',
+
   // About Page
   'about.history': 'HISTORY',
   'about.historyHighlight': 'FORMATION',
