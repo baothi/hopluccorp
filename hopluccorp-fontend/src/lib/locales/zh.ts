@@ -37,6 +37,12 @@ const zh = {
   'menu.careers': '招聘',
   'menu.contact': '联系',
 
+  // Projects Categories
+  'projects.cat.all': '全部',
+  'projects.cat.industrial': '工业',
+  'projects.cat.civil': '民用',
+  'projects.cat.infrastructure': '基础设施',
+
   // Projects Page
   'projects.all': '全部',
   'projects.searchPlaceholder': '输入项目名称',

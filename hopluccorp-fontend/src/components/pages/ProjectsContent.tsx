@@ -31,10 +31,17 @@ export default function ProjectsContent({ locale }: Props) {
   // Build data: API → fallback
   const categories = api.categories.length
     ? [
-        { id: 'all', name: 'Tất cả', slug: 'tat-ca' },
-        ...api.categories.map((c) => ({ id: c.slug, name: c.name, slug: c.slug })),
+        { id: 'all', name: t(locale, 'projects.cat.all'), slug: 'tat-ca' },
+        ...api.categories.map((c) => ({
+          id: c.slug,
+          name: t(locale, `projects.cat.${c.slug}`) !== `projects.cat.${c.slug}` ? t(locale, `projects.cat.${c.slug}`) : c.name,
+          slug: c.slug,
+        })),
       ]
-    : fallback.projectCategories;
+    : fallback.projectCategories.map((c) => ({
+        ...c,
+        name: t(locale, `projects.cat.${c.id}`) !== `projects.cat.${c.id}` ? t(locale, `projects.cat.${c.id}`) : c.name,
+      }));
 
   const projectsList: Project[] = api.projects.length
     ? api.projects.map((p) => ({
@@ -70,7 +77,7 @@ export default function ProjectsContent({ locale }: Props) {
         <section className="h-20 bg-gray-50" />
       </main>
 
-      <Footer />
+      <Footer locale={locale} />
     </div>
   );
 }

@@ -37,6 +37,12 @@ const vi = {
   'menu.careers': 'TUYỂN DỤNG',
   'menu.contact': 'LIÊN HỆ',
 
+  // Projects Categories
+  'projects.cat.all': 'Tất cả',
+  'projects.cat.industrial': 'Công nghiệp',
+  'projects.cat.civil': 'Dân dụng',
+  'projects.cat.infrastructure': 'Hạ tầng',
+
   // Projects Page
   'projects.all': 'Tất cả',
   'projects.searchPlaceholder': 'Nhập tên dự án',

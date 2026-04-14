@@ -37,6 +37,12 @@ const ko = {
   'menu.careers': '채용',
   'menu.contact': '연락처',
 
+  // Projects Categories
+  'projects.cat.all': '전체',
+  'projects.cat.industrial': '산업',
+  'projects.cat.civil': '민간',
+  'projects.cat.infrastructure': '인프라',
+
   // Projects Page
   'projects.all': '전체',
   'projects.searchPlaceholder': '프로젝트명 입력',

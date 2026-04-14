@@ -37,6 +37,12 @@ const en = {
   'menu.careers': 'CAREERS',
   'menu.contact': 'CONTACT',
 
+  // Projects Categories
+  'projects.cat.all': 'All',
+  'projects.cat.industrial': 'Industrial',
+  'projects.cat.civil': 'Civil',
+  'projects.cat.infrastructure': 'Infrastructure',
+
   // Projects Page
   'projects.all': 'All',
   'projects.searchPlaceholder': 'Enter project name',
