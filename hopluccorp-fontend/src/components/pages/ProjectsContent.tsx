@@ -56,9 +56,11 @@ export default function ProjectsContent({ locale }: Props) {
       <VerticalPagination totalSections={3} />
 
       <main className="relative">
-        <BannerSection
-          banners={[{ id: 1, image: fallback.projectsBanner.image, alt: 'Dự án Hợp Lực' }]}
-        />
+        <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px]">
+          <BannerSection
+            banners={[{ id: 1, image: fallback.projectsBanner.image, alt: 'Dự án Hợp Lực' }]}
+          />
+        </div>
         <ProjectsListSection
           categories={categories}
           projectsList={projectsList}
