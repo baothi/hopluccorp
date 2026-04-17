@@ -42,6 +42,9 @@ const zh = {
   'projects.cat.industrial': '工业',
   'projects.cat.civil': '民用',
   'projects.cat.infrastructure': '基础设施',
+  'projects.cat.cong-nghiep': '工业',
+  'projects.cat.dan-dung': '民用',
+  'projects.cat.ha-tang': '基础设施',
 
   // Projects Page
   'projects.all': '全部',

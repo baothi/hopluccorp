@@ -42,6 +42,9 @@ const ko = {
   'projects.cat.industrial': '산업',
   'projects.cat.civil': '민간',
   'projects.cat.infrastructure': '인프라',
+  'projects.cat.cong-nghiep': '산업',
+  'projects.cat.dan-dung': '민간',
+  'projects.cat.ha-tang': '인프라',
 
   // Projects Page
   'projects.all': '전체',

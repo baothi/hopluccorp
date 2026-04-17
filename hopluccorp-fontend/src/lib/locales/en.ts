@@ -42,6 +42,9 @@ const en = {
   'projects.cat.industrial': 'Industrial',
   'projects.cat.civil': 'Civil',
   'projects.cat.infrastructure': 'Infrastructure',
+  'projects.cat.cong-nghiep': 'Industrial',
+  'projects.cat.dan-dung': 'Civil',
+  'projects.cat.ha-tang': 'Infrastructure',
 
   // Projects Page
   'projects.all': 'All',
