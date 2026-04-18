@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchOrganizationPage } from '@/store/organization/organizationSlice';
 import { safeImg } from '@/lib/utils/safeImg';
+import { t } from '@/lib/i18n';
 import * as fallback from '@/lib/data/organizationpage';
 
 import FadeIn from '@/components/animations/FadeIn';
@@ -80,13 +81,13 @@ export default function OrganizationContent({ locale }: Props) {
         <OrganizationChartSection data={chart} />
 
         {/* Section 4: Thư viện */}
-        <GallerySection images={galleryImages} />
+        <GallerySection images={galleryImages} locale={locale} />
 
         {/* Section 5: Footer placeholder */}
         <section className="h-20 bg-gray-50" />
       </main>
 
-      <Footer />
+      <Footer locale={locale} />
     </div>
   );
 }
@@ -204,7 +205,7 @@ interface GalleryImage {
   alt: string;
 }
 
-function GallerySection({ images }: { images: GalleryImage[] }) {
+function GallerySection({ images, locale }: { images: GalleryImage[]; locale: string }) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
   return (
@@ -213,7 +214,7 @@ function GallerySection({ images }: { images: GalleryImage[] }) {
         <FadeIn direction="up" delay={0.2}>
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-              Thư viện
+              {t(locale, 'organization.gallery')}
             </h2>
           </div>
         </FadeIn>

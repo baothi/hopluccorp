@@ -21,6 +21,13 @@ export interface ContactState {
   submitError: string | null;
 }
 
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+};
+
 // ========== Locale map ==========
 const LOCALE_MAP: Record<string, string> = {
   vi: 'vi',
@@ -55,11 +62,13 @@ export const fetchContactInfo = createAsyncThunk(
 export const submitContactForm = createAsyncThunk(
   'contact/submitContactForm',
   async (
-    data: { name: string; email: string; phone: string; message: string },
+    { data, locale = 'vi' }: { data: ContactFormData; locale?: string },
     { rejectWithValue }
   ) => {
+    const lang = LOCALE_MAP[locale] || 'vi';
+
     try {
-      const res = await axiosInstance.post('/api/pages/contact/submit/', data);
+      const res = await axiosInstance.post(`/api/pages/contact/submit/?lang=${lang}`, data);
       return res.data;
     } catch {
       return rejectWithValue('Failed to submit contact form');

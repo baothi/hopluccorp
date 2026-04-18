@@ -52,7 +52,7 @@ export default function ContactContent({ locale }: Props) {
           submitLoading={submitLoading}
           submitSuccess={submitSuccess}
           submitError={submitError}
-          onSubmit={(data) => dispatch(submitContactForm(data))}
+          onSubmit={(data) => dispatch(submitContactForm({ data, locale }))}
           onReset={() => dispatch(resetSubmitState())}
         />
 

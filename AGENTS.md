@@ -1,4 +1,4 @@
-# CLAUDE.md — Quy tắc làm việc
+# AGENTS.md — Quy tắc làm việc
 
 ## Nguyên tắc BẮT BUỘC
 

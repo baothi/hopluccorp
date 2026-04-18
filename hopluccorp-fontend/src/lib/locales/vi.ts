@@ -10,6 +10,11 @@ const vi = {
   // News Section
   'news.title': 'Tin tức',
   'news.readMore': 'Tìm hiểu thêm',
+  'news.emptyCategory': 'Không có tin tức nào trong danh mục này',
+  'news.backToList': 'Quay lại tin tức',
+  'news.publishedAt': 'Ngày đăng:',
+  'news.noContent': 'Nội dung đang được cập nhật.',
+  'news.detailNotFound': 'Không tìm thấy tin tức',
 
   // Footer
   'footer.follow': 'Follow Hợp Lực',
@@ -56,6 +61,17 @@ const vi = {
   'projects.clearFilter': 'Xóa bộ lọc',
   'projects.loadMore': 'Xem thêm',
   'projects.scale': 'Quy mô',
+
+  // Resources Page
+  'resources.all': 'Tất cả',
+  'resources.loadMoreProjects': 'Xem thêm ({count} dự án)',
+  'resources.noProjects': 'Không tìm thấy dự án nào',
+  'resources.noProjectsInProvince': 'Không tìm thấy dự án nào tại {province}',
+  'resources.showingSummary': 'Hiển thị {visible} / {total} dự án',
+  'resources.inProvince': 'tại {province}',
+
+  // Organization Page
+  'organization.gallery': 'Thư viện',
 
   // About Page
   'about.history': 'LỊCH SỬ',

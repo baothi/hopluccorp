@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchResourcesPage } from '@/store/resources/resourcesSlice';
 import { safeImg } from '@/lib/utils/safeImg';
 import * as fallback from '@/lib/data/resourcespage';
+import { t } from '@/lib/i18n';
 
 import FadeIn from '@/components/animations/FadeIn';
 import Footer from '@/components/layout/Footer';
@@ -92,12 +93,13 @@ export default function ResourcesContent({ locale }: Props) {
           section={projectsSectionData}
           projects={projectsList}
           provinces={provincesList}
+          locale={locale}
         />
 
         <section className="h-20 bg-gray-50" />
       </main>
 
-      <Footer />
+      <Footer locale={locale} />
     </div>
   );
 }
@@ -311,13 +313,24 @@ interface ProjectsSectionProps {
   };
   projects: { id: number; name: string; location: string; province: string }[];
   provinces: string[];
+  locale: string;
 }
 
-function ProjectsSection({ section, projects, provinces }: ProjectsSectionProps) {
-  const [selectedProvince, setSelectedProvince] = useState('Tất cả');
+function ProjectsSection({ section, projects, provinces, locale }: ProjectsSectionProps) {
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
+  const allProvinceLabel = t(locale, 'resources.all');
+  const allProvinceLabels = new Set(['Tất cả', 'All', '全部', '전체', allProvinceLabel]);
+  const provinceOptions = Array.from(
+    new Set(provinces.filter((province) => province && !allProvinceLabels.has(province.trim())))
+  );
+  const formatText = (key: string, values: Record<string, string | number>) =>
+    Object.entries(values).reduce(
+      (text, [name, value]) => text.replace(`{${name}}`, String(value)),
+      t(locale, key)
+    );
 
-  const filteredProjects = selectedProvince === 'Tất cả'
+  const filteredProjects = selectedProvince === null
     ? projects
     : projects.filter(p => p.province === selectedProvince);
 
@@ -361,7 +374,21 @@ function ProjectsSection({ section, projects, provinces }: ProjectsSectionProps)
             <div className="lg:col-span-2">
               <h5 className="text-white font-medium mb-3">Lọc theo tỉnh thành</h5>
               <div className="flex flex-wrap gap-2">
-                {provinces.map((province) => (
+                <button
+                  onClick={() => {
+                    setSelectedProvince(null);
+                    setVisibleCount(12);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedProvince === null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }`}
+                >
+                  {allProvinceLabel}
+                </button>
+
+                {provinceOptions.map((province) => (
                   <button
                     key={province}
                     onClick={() => {
@@ -415,7 +442,9 @@ function ProjectsSection({ section, projects, provinces }: ProjectsSectionProps)
                 onClick={() => setVisibleCount(prev => prev + 12)}
                 className="px-8 py-3 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors"
               >
-                Xem thêm ({filteredProjects.length - visibleCount} dự án)
+                {formatText('resources.loadMoreProjects', {
+                  count: filteredProjects.length - visibleCount,
+                })}
               </button>
             </div>
           </FadeIn>
@@ -424,15 +453,22 @@ function ProjectsSection({ section, projects, provinces }: ProjectsSectionProps)
         {/* No results */}
         {filteredProjects.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-white/70">Không tìm thấy dự án nào tại {selectedProvince}</p>
+            <p className="text-white/70">
+              {selectedProvince
+                ? formatText('resources.noProjectsInProvince', { province: selectedProvince })
+                : t(locale, 'resources.noProjects')}
+            </p>
           </div>
         )}
 
         {/* Stats summary */}
         <FadeIn direction="up" delay={0.5}>
           <div className="mt-12 text-center text-white/60 text-sm">
-            Hiển thị {visibleProjects.length} / {filteredProjects.length} dự án
-            {selectedProvince !== 'Tất cả' && ` tại ${selectedProvince}`}
+            {formatText('resources.showingSummary', {
+              visible: visibleProjects.length,
+              total: filteredProjects.length,
+            })}
+            {selectedProvince && ` ${formatText('resources.inProvince', { province: selectedProvince })}`}
           </div>
         </FadeIn>
       </div>

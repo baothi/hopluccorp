@@ -10,6 +10,11 @@ const zh = {
   // News Section
   'news.title': '新闻',
   'news.readMore': '了解更多',
+  'news.emptyCategory': '此分类暂无新闻',
+  'news.backToList': '返回新闻',
+  'news.publishedAt': '发布日期：',
+  'news.noContent': '内容正在更新。',
+  'news.detailNotFound': '未找到新闻',
 
   // Footer
   'footer.follow': '关注 Hợp Lực',
@@ -59,6 +64,17 @@ const zh = {
   'projects.clearFilter': '清除筛选',
   'projects.loadMore': '查看更多',
   'projects.scale': '规模',
+
+  // Resources Page
+  'resources.all': '全部',
+  'resources.loadMoreProjects': '查看更多（{count}个项目）',
+  'resources.noProjects': '未找到项目',
+  'resources.noProjectsInProvince': '未找到{province}的项目',
+  'resources.showingSummary': '显示 {visible} / {total} 个项目',
+  'resources.inProvince': '在{province}',
+
+  // Organization Page
+  'organization.gallery': '图片库',
 
   // About Page
   'about.history': '历史',

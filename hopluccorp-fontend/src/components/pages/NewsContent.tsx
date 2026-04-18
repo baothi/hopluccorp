@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchNewsList } from '@/store/news/newsSlice';
 import { safeImg } from '@/lib/utils/safeImg';
 import * as fallback from '@/lib/data/newspage';
+import { t } from '@/lib/i18n';
 
 import FadeIn from '@/components/animations/FadeIn';
 import Footer from '@/components/layout/Footer';
@@ -16,6 +17,23 @@ import Link from 'next/link';
 
 interface Props {
   locale: string;
+}
+
+const DATE_LOCALES: Record<string, string> = {
+  vi: 'vi-VN',
+  en: 'en-US',
+  zh: 'zh-CN',
+  ko: 'ko-KR',
+};
+
+function formatDate(date: string, locale: string) {
+  if (!date) return '';
+
+  return new Date(date).toLocaleDateString(DATE_LOCALES[locale] || 'vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 }
 
 export default function NewsContent({ locale }: Props) {
@@ -56,7 +74,7 @@ export default function NewsContent({ locale }: Props) {
         <section className="h-20 bg-gray-50" />
       </main>
 
-      <Footer />
+      <Footer locale={locale} />
     </div>
   );
 }
@@ -138,7 +156,7 @@ function NewsListSection({ categories, newsItems, locale }: NewsListProps) {
               <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
-              <p className="text-gray-500">Không có tin tức nào trong danh mục này</p>
+              <p className="text-gray-500">{t(locale, 'news.emptyCategory')}</p>
             </div>
           </FadeIn>
         )}
@@ -235,11 +253,7 @@ function NewsCard({ news, locale }: NewsCardProps) {
 
       <div className="p-6 flex flex-col flex-1">
         <div className="text-sm text-gray-400 mb-2">
-          {news.date && new Date(news.date).toLocaleDateString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          })}
+          {formatDate(news.date, locale)}
         </div>
 
         <h3 className="text-lg font-bold text-gray-900 mb-4 line-clamp-3 group-hover:text-red-600 transition-colors flex-1">
@@ -252,7 +266,7 @@ function NewsCard({ news, locale }: NewsCardProps) {
           href={`/${locale}/tin-tuc/${news.slug}`}
           className="inline-flex items-center text-red-600 font-medium hover:text-red-700 transition-colors"
         >
-          Tìm hiểu thêm
+          {t(locale, 'news.readMore')}
           <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>

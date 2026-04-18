@@ -10,6 +10,11 @@ const en = {
   // News Section
   'news.title': 'News',
   'news.readMore': 'Read more',
+  'news.emptyCategory': 'No news found in this category',
+  'news.backToList': 'Back to news',
+  'news.publishedAt': 'Published:',
+  'news.noContent': 'Content is being updated.',
+  'news.detailNotFound': 'News not found',
 
   // Footer
   'footer.follow': 'Follow Hợp Lực',
@@ -59,6 +64,17 @@ const en = {
   'projects.clearFilter': 'Clear filters',
   'projects.loadMore': 'Load more',
   'projects.scale': 'Scale',
+
+  // Resources Page
+  'resources.all': 'All',
+  'resources.loadMoreProjects': 'Load more ({count} projects)',
+  'resources.noProjects': 'No projects found',
+  'resources.noProjectsInProvince': 'No projects found in {province}',
+  'resources.showingSummary': 'Showing {visible} / {total} projects',
+  'resources.inProvince': 'in {province}',
+
+  // Organization Page
+  'organization.gallery': 'Gallery',
 
   // About Page
   'about.history': 'HISTORY',

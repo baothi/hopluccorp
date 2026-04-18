@@ -51,10 +51,26 @@ from .serializers import (
 class LangMixin:
     """Activate language from ?lang= query param."""
 
+    LANG_ALIASES = {
+        "vi": "vi",
+        "en": "en",
+        "en-us": "en",
+        "en-gb": "en",
+        "zh": "zh-hans",
+        "zh-cn": "zh-hans",
+        "zh-hans": "zh-hans",
+        "ko": "ko",
+        "kr": "ko",
+    }
+
+    def get_lang(self, request):
+        lang = request.query_params.get("lang", "vi").lower()
+        return self.LANG_ALIASES.get(lang, "vi")
+
     def activate_lang(self, request):
-        lang = request.query_params.get("lang", "vi")
-        if lang in ("vi", "en", "zh-hans", "ko"):
-            activate(lang)
+        lang = self.get_lang(request)
+        activate(lang)
+        return lang
 
 
 class HomepageView(LangMixin, APIView):
@@ -275,7 +291,7 @@ class ContactPageView(LangMixin, APIView):
         return Response(serializer.data)
 
 
-class ContactSubmitView(APIView):
+class ContactSubmitView(LangMixin, APIView):
     """
     POST /api/pages/contact/submit/
     Submit a contact form.
@@ -283,8 +299,16 @@ class ContactSubmitView(APIView):
 
     permission_classes = [AllowAny]
 
+    SUCCESS_MESSAGES = {
+        "vi": "Gửi liên hệ thành công!",
+        "en": "Your message has been sent successfully!",
+        "zh-hans": "您的联系信息已成功提交！",
+        "ko": "문의가 성공적으로 접수되었습니다!",
+    }
+
     def post(self, request):
+        lang = self.activate_lang(request)
         serializer = ContactSubmissionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"detail": "Gửi liên hệ thành công!", "data": serializer.data}, status=201)
+        return Response({"detail": self.SUCCESS_MESSAGES[lang], "data": serializer.data}, status=201)

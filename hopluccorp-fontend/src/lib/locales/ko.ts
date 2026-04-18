@@ -10,6 +10,11 @@ const ko = {
   // News Section
   'news.title': '뉴스',
   'news.readMore': '자세히 보기',
+  'news.emptyCategory': '이 카테고리에 뉴스가 없습니다',
+  'news.backToList': '뉴스로 돌아가기',
+  'news.publishedAt': '게시일:',
+  'news.noContent': '콘텐츠를 업데이트 중입니다.',
+  'news.detailNotFound': '뉴스를 찾을 수 없습니다',
 
   // Footer
   'footer.follow': 'Hợp Lực 팔로우',
@@ -59,6 +64,17 @@ const ko = {
   'projects.clearFilter': '필터 초기화',
   'projects.loadMore': '더 보기',
   'projects.scale': '규모',
+
+  // Resources Page
+  'resources.all': '전체',
+  'resources.loadMoreProjects': '더 보기 ({count}개 프로젝트)',
+  'resources.noProjects': '프로젝트를 찾을 수 없습니다',
+  'resources.noProjectsInProvince': '{province}의 프로젝트를 찾을 수 없습니다',
+  'resources.showingSummary': '{visible} / {total}개 프로젝트 표시',
+  'resources.inProvince': '{province}에서',
+
+  // Organization Page
+  'organization.gallery': '갤러리',
 
   // About Page
   'about.history': '역사',

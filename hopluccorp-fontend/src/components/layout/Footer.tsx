@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { logos, backgroundImages, contactInfo } from '@/lib/data/homepage';
 import { t } from '@/lib/i18n';
 
@@ -9,7 +10,11 @@ interface FooterProps {
   locale?: string;
 }
 
-export default function Footer({ locale = 'vi' }: FooterProps) {
+export default function Footer({ locale }: FooterProps) {
+  const pathname = usePathname();
+  const pathLocale = pathname?.split('/')[1];
+  const currentLocale = locale || pathLocale || 'vi';
+
   return (
     <footer
       className="footer relative bg-cover bg-center text-white py-12"
@@ -22,7 +27,7 @@ export default function Footer({ locale = 'vi' }: FooterProps) {
           {/* Column 1: Logo + QR + Social */}
           <div className="footer_content">
             <div className="mb-6">
-              <Link href="/" className="inline-block mb-4">
+              <Link href={`/${currentLocale}`} className="inline-block mb-4">
                 <img
                   src={logos.footer}
                   alt="Hợp Lực"
@@ -41,7 +46,7 @@ export default function Footer({ locale = 'vi' }: FooterProps) {
 
             {/* Social Media */}
             <div className="mt-6">
-              <span className="block text-sm font-medium mb-3">{t(locale, 'footer.follow')}</span>
+              <span className="block text-sm font-medium mb-3">{t(currentLocale, 'footer.follow')}</span>
               <div className="flex gap-3">
                 <Link
                   href={contactInfo.facebook}
@@ -73,14 +78,14 @@ export default function Footer({ locale = 'vi' }: FooterProps) {
           {/* Column 2: Addresses */}
           <div className="footer_content">
             <div className="mb-6">
-              <h4 className="text-lg font-semibold mb-3 text-red-500">{t(locale, 'footer.headquarters')}</h4>
+              <h4 className="text-lg font-semibold mb-3 text-red-500">{t(currentLocale, 'footer.headquarters')}</h4>
               <p className="text-sm text-gray-300">
                 {contactInfo.address}
               </p>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-3 text-red-500">{t(locale, 'footer.hcmOffice')}</h4>
+              <h4 className="text-lg font-semibold mb-3 text-red-500">{t(currentLocale, 'footer.hcmOffice')}</h4>
               <p className="text-sm text-gray-300">
                 {contactInfo.addressHCM}
               </p>
@@ -89,7 +94,7 @@ export default function Footer({ locale = 'vi' }: FooterProps) {
 
           {/* Column 3: Contact */}
           <div className="footer_content">
-            <h4 className="text-lg font-semibold mb-4 text-red-500">{t(locale, 'footer.contact')}</h4>
+            <h4 className="text-lg font-semibold mb-4 text-red-500">{t(currentLocale, 'footer.contact')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-gray-300">
                 <svg
@@ -127,10 +132,10 @@ export default function Footer({ locale = 'vi' }: FooterProps) {
               </li>
               <li className="mt-4">
                 <Link
-                  href="/tuyen-dung"
+                  href={`/${currentLocale}/tuyen-dung`}
                   className="inline-block px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
                 >
-                  {t(locale, 'footer.recruitment')}
+                  {t(currentLocale, 'footer.recruitment')}
                 </Link>
               </li>
             </ul>

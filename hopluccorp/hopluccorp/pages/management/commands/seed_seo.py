@@ -52,11 +52,75 @@ SEO_DATA = [
         "keywords_zh_hans": "组织架构, 组织图, 合力",
         "keywords_ko": "조직 구조, 조직도, 합력",
     },
+    {
+        "page_key": "resources",
+        "page_name": "Nguồn lực",
+        "title_vi": "Nguồn lực - Hợp Lực Corp",
+        "title_en": "Resources - Hop Luc Corp",
+        "title_zh_hans": "资源 - 合力集团",
+        "title_ko": "리소스 - 합력그룹",
+        "description_vi": "Nguồn nhân lực, hệ thống quản lý và các dự án tiêu biểu của Hợp Lực.",
+        "description_en": "Human resources, management systems, and featured projects of Hop Luc.",
+        "description_zh_hans": "合力的人力资源、管理体系和代表性项目。",
+        "description_ko": "합력의 인적 자원, 관리 시스템 및 대표 프로젝트.",
+        "keywords_vi": "nguồn lực Hợp Lực, nhân sự, hệ thống quản lý, dự án tiêu biểu",
+        "keywords_en": "Hop Luc resources, human resources, management system, featured projects",
+        "keywords_zh_hans": "合力资源, 人力资源, 管理体系, 代表性项目",
+        "keywords_ko": "합력 리소스, 인적 자원, 관리 시스템, 대표 프로젝트",
+    },
+    {
+        "page_key": "projects",
+        "page_name": "Dự án",
+        "title_vi": "Dự án - Hợp Lực Corp",
+        "title_en": "Projects - Hop Luc Corp",
+        "title_zh_hans": "项目 - 合力集团",
+        "title_ko": "프로젝트 - 합력그룹",
+        "description_vi": "Danh sách các dự án công nghiệp, dân dụng và hạ tầng tiêu biểu do Hợp Lực triển khai.",
+        "description_en": "Featured industrial, civil, and infrastructure projects delivered by Hop Luc.",
+        "description_zh_hans": "合力实施的代表性工业、民用和基础设施项目。",
+        "description_ko": "합력이 수행한 대표 산업, 민간 및 인프라 프로젝트.",
+        "keywords_vi": "dự án Hợp Lực, dự án công nghiệp, tổng thầu EPC",
+        "keywords_en": "Hop Luc projects, industrial projects, EPC contractor",
+        "keywords_zh_hans": "合力项目, 工业项目, EPC总承包商",
+        "keywords_ko": "합력 프로젝트, 산업 프로젝트, EPC 시공사",
+    },
+    {
+        "page_key": "news",
+        "page_name": "Tin tức",
+        "title_vi": "Tin tức - Hợp Lực Corp",
+        "title_en": "News - Hop Luc Corp",
+        "title_zh_hans": "新闻 - 合力集团",
+        "title_ko": "뉴스 - 합력그룹",
+        "description_vi": "Tin tức, sự kiện và hoạt động mới nhất từ hệ sinh thái Hợp Lực.",
+        "description_en": "Latest news, events, and activities from the Hop Luc ecosystem.",
+        "description_zh_hans": "合力生态系统的最新新闻、活动和动态。",
+        "description_ko": "합력 생태계의 최신 뉴스, 행사 및 활동.",
+        "keywords_vi": "tin tức Hợp Lực, sự kiện, hoạt động doanh nghiệp",
+        "keywords_en": "Hop Luc news, events, corporate activities",
+        "keywords_zh_hans": "合力新闻, 活动, 企业动态",
+        "keywords_ko": "합력 뉴스, 행사, 기업 활동",
+    },
+    {
+        "page_key": "contact",
+        "page_name": "Liên hệ",
+        "title_vi": "Liên hệ - Hợp Lực Corp",
+        "title_en": "Contact - Hop Luc Corp",
+        "title_zh_hans": "联系我们 - 合力集团",
+        "title_ko": "문의 - 합력그룹",
+        "description_vi": "Thông tin liên hệ Công ty Cổ phần Xây dựng Hợp Lực.",
+        "description_en": "Contact information for Hop Luc Construction Joint Stock Company.",
+        "description_zh_hans": "合力建设股份公司的联系信息。",
+        "description_ko": "합력건설주식회사의 연락처 정보.",
+        "keywords_vi": "liên hệ Hợp Lực, địa chỉ Hợp Lực, số điện thoại Hợp Lực",
+        "keywords_en": "contact Hop Luc, Hop Luc address, Hop Luc phone",
+        "keywords_zh_hans": "联系合力, 合力地址, 合力电话",
+        "keywords_ko": "합력 문의, 합력 주소, 합력 전화",
+    },
 ]
 
 
 class Command(BaseCommand):
-    help = "Seed SEO metadata for homepage and about pages (4 languages)"
+    help = "Seed SEO metadata for public pages (4 languages)"
 
     def add_arguments(self, parser):
         parser.add_argument("--reset", action="store_true", help="Delete all SEO data before seeding")
@@ -70,7 +134,8 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
 
-        for seo_data in SEO_DATA:
+        for seo_item in SEO_DATA:
+            seo_data = seo_item.copy()
             page_key = seo_data.pop("page_key")
             page_name = seo_data.pop("page_name")
 
