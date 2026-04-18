@@ -174,9 +174,32 @@ class Partner(OrderedModel):
         return self.name
 
 
+class NewsCategory(OrderedModel):
+    """News categories / Danh mục tin tức."""
+
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=120, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_news_categories"
+        verbose_name = "⑥ News Category"
+        verbose_name_plural = "⑥ News Categories (Danh mục tin tức)"
+
+    def __str__(self):
+        return self.name
+
+
 class NewsArticle(models.Model):
     """News articles / Tin tức."""
 
+    category = models.ForeignKey(
+        NewsCategory,
+        on_delete=models.SET_NULL,
+        related_name="articles",
+        blank=True,
+        null=True,
+    )
     title = models.CharField(max_length=500)
     slug = models.SlugField(max_length=500, blank=True)
     excerpt = models.TextField(blank=True, default="", help_text="Mô tả ngắn")

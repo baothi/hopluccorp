@@ -42,33 +42,24 @@ export default function NewsContent({ locale }: Props) {
   const dispatch = useAppDispatch();
   const api = useAppSelector((state) => state.news);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState('all');
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [locale]);
+  }, [activeCategory, locale]);
 
   useEffect(() => {
     dispatch(fetchNewsList({
       locale,
+      category: activeCategory,
       limit: ITEMS_PER_PAGE,
       offset: (currentPage - 1) * ITEMS_PER_PAGE,
     }));
-  }, [currentPage, dispatch, locale]);
+  }, [activeCategory, currentPage, dispatch, locale]);
 
   const useApiData = api.loaded && !api.error;
 
   const categories = useMemo(() => {
-    const allCategory = {
-      id: 'all',
-      name: t(locale, 'news.cat.all'),
-      slug: 'tin-tuc',
-    };
-
-    // Backend news does not have categories yet, so API mode only shows "All".
-    if (useApiData) {
-      return [allCategory];
-    }
-
     return fallback.newsCategories.map((category) => {
       const labelKey = `news.cat.${category.id}`;
       const label = t(locale, labelKey);
@@ -79,7 +70,7 @@ export default function NewsContent({ locale }: Props) {
         slug: category.slug,
       };
     });
-  }, [locale, useApiData]);
+  }, [locale]);
 
   const newsItems = useMemo(() => (
     useApiData
@@ -88,14 +79,12 @@ export default function NewsContent({ locale }: Props) {
         title: item.title,
         slug: item.slug,
         image: safeImg(item.image),
-        category: '',
+        category: item.category?.slug || '',
         date: item.published_at || '',
         excerpt: item.excerpt,
       }))
       : fallback.newsItems
   ), [api.articles, useApiData]);
-
-  const totalItems = useApiData ? api.count : newsItems.length;
 
   return (
     <div className="min-h-screen bg-white">
@@ -103,17 +92,23 @@ export default function NewsContent({ locale }: Props) {
       <VerticalPagination totalSections={4} />
 
       <main className="relative">
-        <BannerSection />
+        <div className="relative w-full h-[280px] sm:h-[360px] md:h-[480px] lg:h-[650px]">
+          <BannerSection
+            banners={[{ id: 1, image: fallback.newsBanner.image, alt: t(locale, 'news.title') }]}
+          />
+        </div>
         <NewsListSection
           categories={categories}
           newsItems={newsItems}
           locale={locale}
           currentPage={currentPage}
-          totalItems={totalItems}
+          activeCategory={activeCategory}
+          totalItems={useApiData ? api.count : newsItems.length}
           itemsPerPage={ITEMS_PER_PAGE}
           isServerPaginated={useApiData}
           isLoading={api.loading}
           onPageChange={setCurrentPage}
+          onCategoryChange={setActiveCategory}
         />
         <section className="h-20 bg-gray-50" />
       </main>
@@ -138,11 +133,13 @@ interface NewsListProps {
   }[];
   locale: string;
   currentPage: number;
+  activeCategory: string;
   totalItems: number;
   itemsPerPage: number;
   isServerPaginated: boolean;
   isLoading: boolean;
   onPageChange: (page: number) => void;
+  onCategoryChange: (category: string) => void;
 }
 
 function NewsListSection({
@@ -150,19 +147,19 @@ function NewsListSection({
   newsItems,
   locale,
   currentPage,
+  activeCategory,
   totalItems,
   itemsPerPage,
   isServerPaginated,
   isLoading,
   onPageChange,
+  onCategoryChange,
 }: NewsListProps) {
-  const [activeCategory, setActiveCategory] = useState('all');
-
   useEffect(() => {
     if (!categories.some((category) => category.id === activeCategory)) {
-      setActiveCategory('all');
+      onCategoryChange('all');
     }
-  }, [activeCategory, categories]);
+  }, [activeCategory, categories, onCategoryChange]);
 
   const filteredNews = useMemo(() => {
     if (isServerPaginated || activeCategory === 'all') {
@@ -181,8 +178,8 @@ function NewsListSection({
       );
 
   const handleCategoryChange = (categoryId: string) => {
-    setActiveCategory(categoryId);
     onPageChange(1);
+    onCategoryChange(categoryId);
   };
 
   return (

@@ -18,6 +18,7 @@ from .models import (
     LeadershipMember,
     ManagementSystem,
     NewsArticle,
+    NewsCategory,
     OrganizationChart,
     OrganizationGalleryItem,
     OrganizationOverview,
@@ -40,6 +41,7 @@ from .serializers import (
     ContactSubmissionSerializer,
     HomepageSerializer,
     NewsArticleDetailSerializer,
+    NewsCategorySerializer,
     NewsArticleListSerializer,
     OrganizationPageSerializer,
     PageSEOSerializer,
@@ -149,7 +151,25 @@ class NewsListView(LangMixin, ListAPIView):
 
     def get_queryset(self):
         self.activate_lang(self.request)
-        return NewsArticle.objects.filter(is_active=True)
+        queryset = NewsArticle.objects.select_related("category").filter(is_active=True)
+        category = self.request.query_params.get("category")
+        if category and category != "all":
+            queryset = queryset.filter(category__slug=category, category__is_active=True)
+        return queryset
+
+
+class NewsCategoryListView(LangMixin, ListAPIView):
+    """
+    GET /api/pages/news/categories/?lang=vi
+    List active news categories.
+    """
+
+    serializer_class = NewsCategorySerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        self.activate_lang(self.request)
+        return NewsCategory.objects.filter(is_active=True)
 
 
 class NewsDetailView(LangMixin, RetrieveAPIView):
@@ -164,7 +184,7 @@ class NewsDetailView(LangMixin, RetrieveAPIView):
 
     def get_queryset(self):
         self.activate_lang(self.request)
-        return NewsArticle.objects.filter(is_active=True)
+        return NewsArticle.objects.select_related("category").filter(is_active=True)
 
 
 class ResourcesPageView(LangMixin, APIView):

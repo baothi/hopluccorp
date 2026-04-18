@@ -17,6 +17,7 @@ from .models import (
     LeadershipMember,
     ManagementSystem,
     NewsArticle,
+    NewsCategory,
     OrganizationChart,
     OrganizationGalleryItem,
     OrganizationOverview,
@@ -89,15 +90,25 @@ class PartnerSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "logo"]
 
 
+class NewsCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsCategory
+        fields = ["id", "name", "slug"]
+
+
 class NewsArticleListSerializer(serializers.ModelSerializer):
     """For listing news (no full content)."""
 
+    category = NewsCategorySerializer(read_only=True)
     featured = serializers.BooleanField(source="is_featured", read_only=True)
     link = serializers.SerializerMethodField()
 
     class Meta:
         model = NewsArticle
-        fields = ["id", "title", "slug", "excerpt", "image", "featured", "published_at", "link"]
+        fields = [
+            "id", "category", "title", "slug", "excerpt",
+            "image", "featured", "published_at", "link",
+        ]
 
     def get_link(self, obj):
         slug = obj.slug or obj.pk
@@ -107,12 +118,13 @@ class NewsArticleListSerializer(serializers.ModelSerializer):
 class NewsArticleDetailSerializer(serializers.ModelSerializer):
     """Full news detail with content."""
 
+    category = NewsCategorySerializer(read_only=True)
     featured = serializers.BooleanField(source="is_featured", read_only=True)
 
     class Meta:
         model = NewsArticle
         fields = [
-            "id", "title", "slug", "excerpt", "content",
+            "id", "category", "title", "slug", "excerpt", "content",
             "image", "featured", "published_at", "created_at",
         ]
 

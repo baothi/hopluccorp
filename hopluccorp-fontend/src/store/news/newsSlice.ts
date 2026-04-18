@@ -2,8 +2,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '@/lib/axios';
 
 // ========== Types ==========
+export interface NewsCategoryData {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export interface NewsArticleData {
   id: number;
+  category: NewsCategoryData | null;
   title: string;
   slug: string;
   excerpt: string;
@@ -48,6 +55,7 @@ type FetchNewsListInput = string | {
   locale?: string;
   limit?: number;
   offset?: number;
+  category?: string;
 };
 
 const DEFAULT_LIMIT = 6;
@@ -66,6 +74,7 @@ function normalizeFetchNewsArgs(input: FetchNewsListInput = 'vi') {
       locale: input,
       limit: DEFAULT_LIMIT,
       offset: 0,
+      category: 'all',
     };
   }
 
@@ -73,37 +82,50 @@ function normalizeFetchNewsArgs(input: FetchNewsListInput = 'vi') {
     locale: input.locale || 'vi',
     limit: input.limit ?? DEFAULT_LIMIT,
     offset: input.offset ?? 0,
+    category: input.category || 'all',
   };
 }
 
-function buildNewsListUrl(lang: string, limit: number, offset: number) {
+function buildNewsListUrl(lang: string, limit: number, offset: number, category: string = 'all') {
   const params = new URLSearchParams({
     lang,
     limit: String(limit),
     offset: String(offset),
   });
 
+  if (category && category !== 'all') {
+    params.set('category', category);
+  }
+
   return `/api/pages/news/?${params.toString()}`;
+}
+
+function encodePathSegment(value: string) {
+  try {
+    return encodeURIComponent(decodeURIComponent(value));
+  } catch {
+    return encodeURIComponent(value);
+  }
 }
 
 // ========== Async thunks ==========
 export const fetchNewsList = createAsyncThunk(
   'news/fetchNewsList',
   async (input: FetchNewsListInput = 'vi', { rejectWithValue }) => {
-    const { locale, limit, offset } = normalizeFetchNewsArgs(input);
+    const { locale, limit, offset, category } = normalizeFetchNewsArgs(input);
     const lang = LOCALE_MAP[locale] || 'vi';
 
     try {
-      const res = await axiosInstance.get<NewsListResponse>(buildNewsListUrl(lang, limit, offset));
+      const res = await axiosInstance.get<NewsListResponse>(buildNewsListUrl(lang, limit, offset, category));
       return res.data;
     } catch {
       if (locale !== 'vi') {
         try {
-          const fallback = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('vi', limit, offset));
+          const fallback = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('vi', limit, offset, category));
           return fallback.data;
         } catch {
           try {
-            const fallbackEn = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('en', limit, offset));
+            const fallbackEn = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('en', limit, offset, category));
             return fallbackEn.data;
           } catch {
             return rejectWithValue('Failed to fetch news list');
@@ -121,12 +143,12 @@ export const fetchNewsDetail = createAsyncThunk(
     const lang = LOCALE_MAP[locale] || 'vi';
 
     try {
-      const res = await axiosInstance.get(`/api/pages/news/${slug}/?lang=${lang}`);
+      const res = await axiosInstance.get(`/api/pages/news/${encodePathSegment(slug)}/?lang=${lang}`);
       return res.data;
     } catch {
       if (locale !== 'vi') {
         try {
-          const fallback = await axiosInstance.get(`/api/pages/news/${slug}/?lang=vi`);
+          const fallback = await axiosInstance.get(`/api/pages/news/${encodePathSegment(slug)}/?lang=vi`);
           return fallback.data;
         } catch {
           return rejectWithValue('Failed to fetch news detail');

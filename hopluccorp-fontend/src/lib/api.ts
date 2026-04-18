@@ -13,6 +13,14 @@ const LOCALE_MAP: Record<string, string> = {
   ko: 'ko',
 };
 
+function encodePathSegment(value: string) {
+  try {
+    return encodeURIComponent(decodeURIComponent(value));
+  } catch {
+    return encodeURIComponent(value);
+  }
+}
+
 async function fetchAPI<T>(endpoint: string, lang: string = 'vi'): Promise<T | null> {
   const djangoLang = LOCALE_MAP[lang] || 'vi';
   const url = `${API_BASE}${endpoint}${endpoint.includes('?') ? '&' : '?'}lang=${djangoLang}`;
@@ -101,6 +109,11 @@ export interface APICategory {
 
 export interface APINewsArticle {
   id: number;
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  } | null;
   title: string;
   slug: string;
   excerpt: string;
@@ -164,9 +177,15 @@ export async function getHomepage(locale: string = 'vi'): Promise<APIHomepage | 
 /**
  * Fetch news list
  */
-export async function getNewsList(locale: string = 'vi', limit: number = 6, offset: number = 0) {
+export async function getNewsList(
+  locale: string = 'vi',
+  limit: number = 6,
+  offset: number = 0,
+  category: string = 'all'
+) {
+  const categoryQuery = category && category !== 'all' ? `&category=${category}` : '';
   return fetchAPI<APIPaginatedResponse<APINewsArticle> | APINewsArticle[]>(
-    `/api/pages/news/?limit=${limit}&offset=${offset}`,
+    `/api/pages/news/?limit=${limit}&offset=${offset}${categoryQuery}`,
     locale
   );
 }
@@ -175,7 +194,7 @@ export async function getNewsList(locale: string = 'vi', limit: number = 6, offs
  * Fetch single news article by slug
  */
 export async function getNewsDetail(slug: string, locale: string = 'vi') {
-  return fetchAPI<APINewsArticle & { content: string }>(`/api/pages/news/${slug}/`, locale);
+  return fetchAPI<APINewsArticle & { content: string }>(`/api/pages/news/${encodePathSegment(slug)}/`, locale);
 }
 
 // ========== About Page Types ==========

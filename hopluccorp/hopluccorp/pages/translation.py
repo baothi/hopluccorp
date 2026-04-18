@@ -16,6 +16,7 @@ from .models import (
     LeadershipMember,
     ManagementSystem,
     NewsArticle,
+    NewsCategory,
     OrganizationChart,
     OrganizationGalleryItem,
     OrganizationOverview,
@@ -72,6 +73,11 @@ class BusinessCategoryTranslationOptions(TranslationOptions):
 @register(NewsArticle)
 class NewsArticleTranslationOptions(TranslationOptions):
     fields = ("title", "slug", "excerpt", "content", "image")
+
+
+@register(NewsCategory)
+class NewsCategoryTranslationOptions(TranslationOptions):
+    fields = ("name",)
 
 
 @register(Partner)

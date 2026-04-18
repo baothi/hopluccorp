@@ -22,6 +22,7 @@ from .models import (
     LeadershipMember,
     ManagementSystem,
     NewsArticle,
+    NewsCategory,
     OrganizationChart,
     OrganizationGalleryItem,
     OrganizationOverview,
@@ -136,6 +137,13 @@ class BusinessCategoryAdmin(ImagePreviewMixin, TranslationAdmin, OrderedModelAdm
 
 
 # ========== NEWS ==========
+@admin.register(NewsCategory)
+class NewsCategoryAdmin(TranslationAdmin, OrderedModelAdmin):
+    list_display = ["name", "slug", "is_active", "move_up_down_links"]
+    list_filter = ["is_active"]
+    search_fields = ["name_vi", "name_en", "name_zh_hans", "name_ko", "slug"]
+
+
 class NewsArticleForm(forms.ModelForm):
     class Meta:
         model = NewsArticle
@@ -151,8 +159,8 @@ class NewsArticleForm(forms.ModelForm):
 @admin.register(NewsArticle)
 class NewsArticleAdmin(ImagePreviewMixin, TranslationAdmin):
     form = NewsArticleForm
-    list_display = ["title", "image_preview", "is_featured", "is_active", "published_at"]
-    list_filter = ["is_featured", "is_active"]
+    list_display = ["title", "category", "image_preview", "is_featured", "is_active", "published_at"]
+    list_filter = ["category", "is_featured", "is_active"]
     search_fields = ["title_vi", "title_en", "title_zh_hans", "title_ko", "excerpt_vi"]
 
     def get_prepopulated_fields(self, request, obj=None):

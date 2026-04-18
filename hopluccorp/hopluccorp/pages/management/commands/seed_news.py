@@ -3,7 +3,55 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from hopluccorp.pages.models import NewsArticle
+from hopluccorp.pages.models import NewsArticle, NewsCategory
+
+
+NEWS_CATEGORIES = [
+    {
+        "slug": "internal",
+        "name_vi": "Nội san",
+        "name_en": "Internal News",
+        "name_zh_hans": "内部刊物",
+        "name_ko": "사내 소식",
+    },
+    {
+        "slug": "company",
+        "name_vi": "Tin tức doanh nghiệp",
+        "name_en": "Corporate News",
+        "name_zh_hans": "企业新闻",
+        "name_ko": "기업 뉴스",
+    },
+    {
+        "slug": "project",
+        "name_vi": "Tin tức dự án",
+        "name_en": "Project News",
+        "name_zh_hans": "项目新闻",
+        "name_ko": "프로젝트 뉴스",
+    },
+]
+
+ARTICLE_CATEGORY_SLUGS = [
+    "company",
+    "company",
+    "project",
+    "internal",
+    "company",
+    "company",
+    "internal",
+    "project",
+    "project",
+    "project",
+    "internal",
+    "internal",
+    "company",
+    "project",
+    "internal",
+    "project",
+    "company",
+    "internal",
+    "project",
+    "company",
+]
 
 
 NEWS_ARTICLES = [
@@ -263,7 +311,7 @@ def build_content(article, lang):
 
 
 class Command(BaseCommand):
-    help = "Seed 20 news articles with full i18n (vi/en/zh/ko)."
+    help = "Seed news categories + 20 news articles with full i18n (vi/en/zh/ko)."
 
     def add_arguments(self, parser):
         parser.add_argument("--reset", action="store_true", help="Delete existing news before seeding")
@@ -271,7 +319,26 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options["reset"]:
             NewsArticle.objects.all().delete()
-            self.stdout.write(self.style.WARNING("Deleted all news articles"))
+            NewsCategory.objects.all().delete()
+            self.stdout.write(self.style.WARNING("Deleted all news articles and categories"))
+
+        for index, category in enumerate(NEWS_CATEGORIES):
+            obj, _ = NewsCategory.objects.update_or_create(
+                slug=category["slug"],
+                defaults={
+                    "name": category["name_vi"],
+                    "name_vi": category["name_vi"],
+                    "name_en": category["name_en"],
+                    "name_zh_hans": category["name_zh_hans"],
+                    "name_ko": category["name_ko"],
+                    "is_active": True,
+                },
+            )
+            if obj.order != index:
+                obj.order = index
+                obj.save(update_fields=["order"])
+
+        self.stdout.write(self.style.SUCCESS(f"Created/updated {len(NEWS_CATEGORIES)} news categories"))
 
         if NewsArticle.objects.exists():
             count = NewsArticle.objects.count()
@@ -280,9 +347,11 @@ class Command(BaseCommand):
 
         now = timezone.now()
         created = 0
+        category_map = {category.slug: category for category in NewsCategory.objects.all()}
 
         for index, article in enumerate(NEWS_ARTICLES):
             NewsArticle.objects.create(
+                category=category_map[ARTICLE_CATEGORY_SLUGS[index]],
                 title=article["title_vi"],
                 title_vi=article["title_vi"],
                 title_en=article["title_en"],
