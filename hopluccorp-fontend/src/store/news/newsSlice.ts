@@ -18,13 +18,39 @@ export interface NewsDetailData extends NewsArticleData {
   created_at: string;
 }
 
+export interface NewsListPagination {
+  count: number;
+  next: string | null;
+  previous: string | null;
+}
+
 export interface NewsState {
   articles: NewsArticleData[];
   detail: NewsDetailData | null;
+  count: number;
+  next: string | null;
+  previous: string | null;
+  limit: number;
+  offset: number;
   loading: boolean;
   detailLoading: boolean;
+  loaded: boolean;
   error: string | null;
 }
+
+interface PaginatedNewsResponse extends NewsListPagination {
+  results: NewsArticleData[];
+}
+
+type NewsListResponse = NewsArticleData[] | PaginatedNewsResponse;
+
+type FetchNewsListInput = string | {
+  locale?: string;
+  limit?: number;
+  offset?: number;
+};
+
+const DEFAULT_LIMIT = 6;
 
 // ========== Locale map ==========
 const LOCALE_MAP: Record<string, string> = {
@@ -34,23 +60,50 @@ const LOCALE_MAP: Record<string, string> = {
   ko: 'ko',
 };
 
+function normalizeFetchNewsArgs(input: FetchNewsListInput = 'vi') {
+  if (typeof input === 'string') {
+    return {
+      locale: input,
+      limit: DEFAULT_LIMIT,
+      offset: 0,
+    };
+  }
+
+  return {
+    locale: input.locale || 'vi',
+    limit: input.limit ?? DEFAULT_LIMIT,
+    offset: input.offset ?? 0,
+  };
+}
+
+function buildNewsListUrl(lang: string, limit: number, offset: number) {
+  const params = new URLSearchParams({
+    lang,
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  return `/api/pages/news/?${params.toString()}`;
+}
+
 // ========== Async thunks ==========
 export const fetchNewsList = createAsyncThunk(
   'news/fetchNewsList',
-  async (locale: string = 'vi', { rejectWithValue }) => {
+  async (input: FetchNewsListInput = 'vi', { rejectWithValue }) => {
+    const { locale, limit, offset } = normalizeFetchNewsArgs(input);
     const lang = LOCALE_MAP[locale] || 'vi';
 
     try {
-      const res = await axiosInstance.get(`/api/pages/news/?lang=${lang}`);
+      const res = await axiosInstance.get<NewsListResponse>(buildNewsListUrl(lang, limit, offset));
       return res.data;
     } catch {
       if (locale !== 'vi') {
         try {
-          const fallback = await axiosInstance.get('/api/pages/news/?lang=vi');
+          const fallback = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('vi', limit, offset));
           return fallback.data;
         } catch {
           try {
-            const fallbackEn = await axiosInstance.get('/api/pages/news/?lang=en');
+            const fallbackEn = await axiosInstance.get<NewsListResponse>(buildNewsListUrl('en', limit, offset));
             return fallbackEn.data;
           } catch {
             return rejectWithValue('Failed to fetch news list');
@@ -88,8 +141,14 @@ export const fetchNewsDetail = createAsyncThunk(
 const initialState: NewsState = {
   articles: [],
   detail: null,
+  count: 0,
+  next: null,
+  previous: null,
+  limit: DEFAULT_LIMIT,
+  offset: 0,
   loading: false,
   detailLoading: false,
+  loaded: false,
   error: null,
 };
 
@@ -109,11 +168,30 @@ const newsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchNewsList.fulfilled, (state, action) => {
+        const { limit, offset } = normalizeFetchNewsArgs(action.meta.arg);
+        const payload = action.payload;
+
         state.loading = false;
-        state.articles = action.payload || [];
+        state.loaded = true;
+        state.limit = limit;
+        state.offset = offset;
+
+        if (Array.isArray(payload)) {
+          state.articles = payload;
+          state.count = payload.length;
+          state.next = null;
+          state.previous = null;
+          return;
+        }
+
+        state.articles = payload?.results || [];
+        state.count = payload?.count || 0;
+        state.next = payload?.next || null;
+        state.previous = payload?.previous || null;
       })
       .addCase(fetchNewsList.rejected, (state, action) => {
         state.loading = false;
+        state.loaded = false;
         state.error = action.payload as string;
       })
       // Detail

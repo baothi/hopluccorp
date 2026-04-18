@@ -15,6 +15,10 @@ const ko = {
   'news.publishedAt': '게시일:',
   'news.noContent': '콘텐츠를 업데이트 중입니다.',
   'news.detailNotFound': '뉴스를 찾을 수 없습니다',
+  'news.cat.all': '전체',
+  'news.cat.internal': '사내 소식',
+  'news.cat.company': '기업 뉴스',
+  'news.cat.project': '프로젝트 뉴스',
 
   // Footer
   'footer.follow': 'Hợp Lực 팔로우',

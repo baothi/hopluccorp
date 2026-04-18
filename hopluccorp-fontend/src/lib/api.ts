@@ -110,6 +110,13 @@ export interface APINewsArticle {
   link: string;
 }
 
+export interface APIPaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export interface APIPartner {
   id: number;
   name: string;
@@ -157,8 +164,11 @@ export async function getHomepage(locale: string = 'vi'): Promise<APIHomepage | 
 /**
  * Fetch news list
  */
-export async function getNewsList(locale: string = 'vi') {
-  return fetchAPI<APINewsArticle[]>('/api/pages/news/', locale);
+export async function getNewsList(locale: string = 'vi', limit: number = 6, offset: number = 0) {
+  return fetchAPI<APIPaginatedResponse<APINewsArticle> | APINewsArticle[]>(
+    `/api/pages/news/?limit=${limit}&offset=${offset}`,
+    locale
+  );
 }
 
 /**

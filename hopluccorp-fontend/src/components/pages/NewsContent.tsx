@@ -26,6 +26,8 @@ const DATE_LOCALES: Record<string, string> = {
   ko: 'ko-KR',
 };
 
+const ITEMS_PER_PAGE = 6;
+
 function formatDate(date: string, locale: string) {
   if (!date) return '';
 
@@ -39,16 +41,49 @@ function formatDate(date: string, locale: string) {
 export default function NewsContent({ locale }: Props) {
   const dispatch = useAppDispatch();
   const api = useAppSelector((state) => state.news);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchNewsList(locale));
-  }, [dispatch, locale]);
+    setCurrentPage(1);
+  }, [locale]);
 
-  // Categories: always use static fallback (backend has no NewsCategory model)
-  const categories = fallback.newsCategories;
+  useEffect(() => {
+    dispatch(fetchNewsList({
+      locale,
+      limit: ITEMS_PER_PAGE,
+      offset: (currentPage - 1) * ITEMS_PER_PAGE,
+    }));
+  }, [currentPage, dispatch, locale]);
 
-  const newsItems = api.articles.length
-    ? api.articles.map((item) => ({
+  const useApiData = api.loaded && !api.error;
+
+  const categories = useMemo(() => {
+    const allCategory = {
+      id: 'all',
+      name: t(locale, 'news.cat.all'),
+      slug: 'tin-tuc',
+    };
+
+    // Backend news does not have categories yet, so API mode only shows "All".
+    if (useApiData) {
+      return [allCategory];
+    }
+
+    return fallback.newsCategories.map((category) => {
+      const labelKey = `news.cat.${category.id}`;
+      const label = t(locale, labelKey);
+
+      return {
+        id: category.id,
+        name: label === labelKey ? category.name : label,
+        slug: category.slug,
+      };
+    });
+  }, [locale, useApiData]);
+
+  const newsItems = useMemo(() => (
+    useApiData
+      ? api.articles.map((item) => ({
         id: item.id,
         title: item.title,
         slug: item.slug,
@@ -57,7 +92,10 @@ export default function NewsContent({ locale }: Props) {
         date: item.published_at || '',
         excerpt: item.excerpt,
       }))
-    : fallback.newsItems;
+      : fallback.newsItems
+  ), [api.articles, useApiData]);
+
+  const totalItems = useApiData ? api.count : newsItems.length;
 
   return (
     <div className="min-h-screen bg-white">
@@ -70,6 +108,12 @@ export default function NewsContent({ locale }: Props) {
           categories={categories}
           newsItems={newsItems}
           locale={locale}
+          currentPage={currentPage}
+          totalItems={totalItems}
+          itemsPerPage={ITEMS_PER_PAGE}
+          isServerPaginated={useApiData}
+          isLoading={api.loading}
+          onPageChange={setCurrentPage}
         />
         <section className="h-20 bg-gray-50" />
       </main>
@@ -93,29 +137,52 @@ interface NewsListProps {
     excerpt: string;
   }[];
   locale: string;
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  isServerPaginated: boolean;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
 }
 
-function NewsListSection({ categories, newsItems, locale }: NewsListProps) {
+function NewsListSection({
+  categories,
+  newsItems,
+  locale,
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  isServerPaginated,
+  isLoading,
+  onPageChange,
+}: NewsListProps) {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+
+  useEffect(() => {
+    if (!categories.some((category) => category.id === activeCategory)) {
+      setActiveCategory('all');
+    }
+  }, [activeCategory, categories]);
 
   const filteredNews = useMemo(() => {
-    if (activeCategory === 'all') {
+    if (isServerPaginated || activeCategory === 'all') {
       return newsItems;
     }
     return newsItems.filter(item => item.category === activeCategory);
-  }, [activeCategory, newsItems]);
+  }, [activeCategory, isServerPaginated, newsItems]);
 
-  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  const paginatedNews = filteredNews.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginationTotal = isServerPaginated ? totalItems : filteredNews.length;
+  const totalPages = Math.ceil(paginationTotal / itemsPerPage);
+  const paginatedNews = isServerPaginated
+    ? filteredNews
+    : filteredNews.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      );
 
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId);
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   return (
@@ -166,8 +233,8 @@ function NewsListSection({ categories, newsItems, locale }: NewsListProps) {
           <FadeIn direction="up" delay={0.3}>
             <div className="flex justify-center items-center gap-2 mt-12">
               <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
+                onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1 || isLoading}
                 className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,11 +251,12 @@ function NewsListSection({ categories, newsItems, locale }: NewsListProps) {
                   return (
                     <button
                       key={page}
-                      onClick={() => setCurrentPage(page)}
+                      onClick={() => onPageChange(page)}
+                      disabled={isLoading}
                       className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-colors ${
                         currentPage === page
                           ? 'bg-red-600 text-white'
-                          : 'border border-gray-300 hover:bg-gray-100'
+                          : 'border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
                       }`}
                     >
                       {page}
@@ -208,8 +276,8 @@ function NewsListSection({ categories, newsItems, locale }: NewsListProps) {
               })}
 
               <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
+                onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+                disabled={currentPage === totalPages || isLoading}
                 className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

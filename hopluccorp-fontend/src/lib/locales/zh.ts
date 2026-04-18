@@ -15,6 +15,10 @@ const zh = {
   'news.publishedAt': '发布日期：',
   'news.noContent': '内容正在更新。',
   'news.detailNotFound': '未找到新闻',
+  'news.cat.all': '全部',
+  'news.cat.internal': '内部刊物',
+  'news.cat.company': '企业新闻',
+  'news.cat.project': '项目新闻',
 
   // Footer
   'footer.follow': '关注 Hợp Lực',

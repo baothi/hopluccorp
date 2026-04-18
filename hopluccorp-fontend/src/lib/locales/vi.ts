@@ -15,6 +15,10 @@ const vi = {
   'news.publishedAt': 'Ngày đăng:',
   'news.noContent': 'Nội dung đang được cập nhật.',
   'news.detailNotFound': 'Không tìm thấy tin tức',
+  'news.cat.all': 'Tất cả',
+  'news.cat.internal': 'Nội san',
+  'news.cat.company': 'Tin tức doanh nghiệp',
+  'news.cat.project': 'Tin tức dự án',
 
   // Footer
   'footer.follow': 'Follow Hợp Lực',

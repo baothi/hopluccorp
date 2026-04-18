@@ -35,9 +35,28 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Lấy locale hiện tại từ URL path
-  const currentLang = pathname.split('/')[1] || 'vi';
+  const supportedLangCodes = languages.map((lang) => lang.code);
+  const pathLang = pathname.split('/')[1];
+  const currentLang = supportedLangCodes.includes(pathLang) ? pathLang : 'vi';
 
   const currentLanguage = languages.find(lang => lang.code === currentLang);
+
+  const buildLanguagePath = (nextLang: string) => {
+    const segments = pathname.split('/');
+
+    if (!supportedLangCodes.includes(segments[1])) {
+      return `/${nextLang}${pathname === '/' ? '' : pathname}`;
+    }
+
+    // News detail slugs are translated per language in the backend.
+    // Without a slug-map endpoint, switching languages from a detail page should land on the translated list.
+    if (segments[2] === 'tin-tuc' && segments[3]) {
+      return `/${nextLang}/tin-tuc`;
+    }
+
+    segments[1] = nextLang;
+    return segments.join('/') || `/${nextLang}`;
+  };
 
   // Detect scroll to change header style
   useEffect(() => {
@@ -94,10 +113,7 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
                   <button
                     key={lang.code}
                     onClick={() => {
-                      // Đổi URL: /vi/... → /en/...
-                      const segments = pathname.split('/');
-                      segments[1] = lang.code;
-                      router.push(segments.join('/'));
+                      router.push(buildLanguagePath(lang.code));
                       setIsLangOpen(false);
                     }}
                     className={cn(

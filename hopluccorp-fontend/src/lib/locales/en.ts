@@ -15,6 +15,10 @@ const en = {
   'news.publishedAt': 'Published:',
   'news.noContent': 'Content is being updated.',
   'news.detailNotFound': 'News not found',
+  'news.cat.all': 'All',
+  'news.cat.internal': 'Internal news',
+  'news.cat.company': 'Corporate news',
+  'news.cat.project': 'Project news',
 
   // Footer
   'footer.follow': 'Follow Hợp Lực',
