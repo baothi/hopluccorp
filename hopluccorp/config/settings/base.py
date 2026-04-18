@@ -115,7 +115,8 @@ MIDDLEWARE = [
 # STATIC
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [str(APPS_DIR / "static")]
+_STATIC_DIR = APPS_DIR / "static"
+STATICFILES_DIRS = [str(_STATIC_DIR)] if _STATIC_DIR.exists() else []
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
