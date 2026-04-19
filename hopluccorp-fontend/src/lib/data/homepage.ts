@@ -97,7 +97,7 @@ export const categories: Category[] = [
     title: 'cơ điện',
     subtitle: 'Tổng thầu',
     image: 'https://hopluccorp.vn/wp-content/uploads/2025/09/tong-thau-co-dien.png',
-    link: '/trang-tong-thau-co-dien'
+    link: '/tong-thau-co-dien'
   },
   {
     id: 3,
@@ -174,7 +174,7 @@ export const navigationItems: NavigationItem[] = [
     href: '#',
     children: [
       { id: 51, label: 'Tổng thầu Xây dựng', href: '/trang-tong-thau-xay-dung' },
-      { id: 52, label: 'Tổng thầu cơ điện', href: '/trang-tong-thau-co-dien' },
+      { id: 52, label: 'Tổng thầu cơ điện', href: '/tong-thau-co-dien' },
       { id: 53, label: 'Hoàn thiện nội thất', href: '/hoan-thien-noi-that' },
       { id: 54, label: 'Vật liệu xây dựng', href: '/vat-lieu-xay-dung' },
       { id: 55, label: 'Công nghiệp phụ trợ', href: '/cong-nghiep-phu-tro' },

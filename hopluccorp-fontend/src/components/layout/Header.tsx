@@ -270,7 +270,7 @@ function MenuOverlay({
       label: t(locale, 'menu.sectors'),
       children: [
         { label: t(locale, 'menu.sectors.construction'), href: `/${locale}/trang-tong-thau-xay-dung` },
-        { label: t(locale, 'menu.sectors.mne'), href: `/${locale}/trang-tong-thau-co-dien` },
+        { label: t(locale, 'menu.sectors.mne'), href: `/${locale}/tong-thau-co-dien` },
         { label: t(locale, 'menu.sectors.interior'), href: `/${locale}/hoan-thien-noi-that` },
         { label: t(locale, 'menu.sectors.materials'), href: `/${locale}/vat-lieu-xay-dung` },
         { label: t(locale, 'menu.sectors.industrial'), href: `/${locale}/cong-nghiep-phu-tro` },

@@ -21,6 +21,16 @@ interface Props {
   locale: string;
 }
 
+function normalizePageLink(link: string, locale: string) {
+  const fixedLink = link === '/trang-tong-thau-co-dien' ? '/tong-thau-co-dien' : link;
+
+  if (!fixedLink.startsWith('/') || /^\/(vi|en|zh|ko)(\/|$)/.test(fixedLink)) {
+    return fixedLink;
+  }
+
+  return `/${locale}${fixedLink}`;
+}
+
 export default function HomepageContent({ locale }: Props) {
   const dispatch = useAppDispatch();
   const api = useAppSelector((state) => state.homepage);
@@ -84,7 +94,7 @@ export default function HomepageContent({ locale }: Props) {
   const bgStats = api.site_config?.bg_stats || fallback.backgroundImages.stats;
   const bgStatsImage = api.site_config?.bg_stats_image || fallback.backgroundImages.statsImage;
 
-  const categories = api.categories.length
+  const categoriesSource = api.categories.length
     ? api.categories.map((c) => ({
         id: c.id,
         title: c.title,
@@ -93,6 +103,10 @@ export default function HomepageContent({ locale }: Props) {
         link: c.link,
       }))
     : fallback.categories;
+  const categories = categoriesSource.map((category) => ({
+    ...category,
+    link: normalizePageLink(category.link, locale),
+  }));
 
   const news = api.news.length
     ? api.news.map((n) => ({
