@@ -8,6 +8,7 @@ import newsReducer from './news/newsSlice';
 import projectsReducer from './projects/projectsSlice';
 import businessFieldReducer from './businessField/businessFieldSlice';
 import contactReducer from './contact/contactSlice';
+import achievementsReducer from './achievements/achievementsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     projects: projectsReducer,
     businessField: businessFieldReducer,
     contact: contactReducer,
+    achievements: achievementsReducer,
   },
 });
 

@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import (
     AboutBlock,
     AboutSection,
+    AchievementGalleryItem,
+    Award,
     BannerSlide,
     BusinessCategory,
     BusinessField,
@@ -373,3 +375,23 @@ class ContactSubmissionSerializer(serializers.ModelSerializer):
         model = ContactSubmission
         fields = ["id", "name", "email", "phone", "message", "created_at"]
         read_only_fields = ["id", "created_at"]
+
+
+# ==================== ACHIEVEMENTS PAGE ====================
+class AwardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Award
+        fields = ["id", "year", "title", "organization", "description", "image"]
+
+
+class AchievementGalleryItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AchievementGalleryItem
+        fields = ["id", "image", "alt"]
+
+
+class AchievementsPageSerializer(serializers.Serializer):
+    """Aggregated achievements page data — single API call."""
+
+    awards = AwardSerializer(many=True)
+    gallery = AchievementGalleryItemSerializer(many=True)

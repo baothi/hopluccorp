@@ -77,6 +77,15 @@ const vi = {
   // Organization Page
   'organization.gallery': 'Thư viện',
 
+  // Achievements Page
+  'achievements.title': 'THÀNH TỰU',
+  'achievements.titleHighlight': 'NỔI BẬT',
+  'achievements.awards': 'Giải thưởng & Chứng nhận',
+  'achievements.gallery': 'Thư viện ảnh',
+  'achievements.noAwards': 'Đang cập nhật thông tin.',
+  'achievements.year': 'Năm',
+  'achievements.issuedBy': 'Đơn vị trao:',
+
   // About Page
   'about.history': 'LỊCH SỬ',
   'about.historyHighlight': 'HÌNH THÀNH',

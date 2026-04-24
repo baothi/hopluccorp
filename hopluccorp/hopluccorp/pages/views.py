@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from .models import (
     AboutBlock,
     AboutSection,
+    AchievementGalleryItem,
+    Award,
     BannerSlide,
     BusinessCategory,
     BusinessField,
@@ -36,6 +38,7 @@ from .models import (
 )
 from .serializers import (
     AboutPageSerializer,
+    AchievementsPageSerializer,
     BusinessFieldDetailSerializer,
     ContactPageSerializer,
     ContactSubmissionSerializer,
@@ -332,3 +335,21 @@ class ContactSubmitView(LangMixin, APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"detail": self.SUCCESS_MESSAGES[lang], "data": serializer.data}, status=201)
+
+
+class AchievementsPageView(LangMixin, APIView):
+    """
+    GET /api/pages/achievements/?lang=vi
+    Returns awards and gallery for the achievements page.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        self.activate_lang(request)
+        data = {
+            "awards": Award.objects.filter(is_active=True),
+            "gallery": AchievementGalleryItem.objects.filter(is_active=True),
+        }
+        serializer = AchievementsPageSerializer(data, context={"request": request})
+        return Response(serializer.data)

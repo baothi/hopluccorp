@@ -80,6 +80,15 @@ const en = {
   // Organization Page
   'organization.gallery': 'Gallery',
 
+  // Achievements Page
+  'achievements.title': 'NOTABLE',
+  'achievements.titleHighlight': 'ACHIEVEMENTS',
+  'achievements.awards': 'Awards & Certifications',
+  'achievements.gallery': 'Photo Gallery',
+  'achievements.noAwards': 'Information is being updated.',
+  'achievements.year': 'Year',
+  'achievements.issuedBy': 'Issued by:',
+
   // About Page
   'about.history': 'HISTORY',
   'about.historyHighlight': 'FORMATION',

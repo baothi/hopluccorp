@@ -80,6 +80,15 @@ const ko = {
   // Organization Page
   'organization.gallery': '갤러리',
 
+  // Achievements Page
+  'achievements.title': '주요',
+  'achievements.titleHighlight': '성과',
+  'achievements.awards': '수상 및 인증',
+  'achievements.gallery': '사진 갤러리',
+  'achievements.noAwards': '정보를 업데이트 중입니다.',
+  'achievements.year': '연도',
+  'achievements.issuedBy': '수여 기관:',
+
   // About Page
   'about.history': '역사',
   'about.historyHighlight': '발전과정',

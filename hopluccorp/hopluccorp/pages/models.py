@@ -712,6 +712,42 @@ class BusinessFieldGallery(OrderedModel):
         return self.alt or f"Gallery #{self.order}"
 
 
+# ==================== ACHIEVEMENTS PAGE ====================
+class Award(OrderedModel):
+    """Giải thưởng & Thành tựu."""
+
+    year = models.CharField(max_length=10, help_text="Năm nhận giải, VD: 2024")
+    title = models.CharField(max_length=500, help_text="Tên giải thưởng")
+    organization = models.CharField(max_length=255, blank=True, default="", help_text="Đơn vị trao giải")
+    description = models.TextField(blank=True, default="", help_text="Mô tả chi tiết")
+    image = models.ImageField(upload_to="achievements/awards/", blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_awards"
+        verbose_name = "㉓ Giải thưởng"
+        verbose_name_plural = "㉓ Giải thưởng & Thành tựu"
+
+    def __str__(self):
+        return f"{self.year} — {self.title}"
+
+
+class AchievementGalleryItem(OrderedModel):
+    """Thư viện ảnh — Thành tựu."""
+
+    image = models.ImageField(upload_to="achievements/gallery/", blank=True)
+    alt = models.CharField(max_length=255, blank=True, default="")
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_achievement_gallery"
+        verbose_name = "㉔ Thư viện ảnh (Thành tựu)"
+        verbose_name_plural = "㉔ Thư viện ảnh (Thành tựu)"
+
+    def __str__(self):
+        return self.alt or f"Gallery #{self.order}"
+
+
 # ==================== CONTACT PAGE ====================
 class ContactSubmission(models.Model):
     """Lưu form liên hệ từ khách hàng."""

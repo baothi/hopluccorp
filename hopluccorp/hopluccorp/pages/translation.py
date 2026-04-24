@@ -3,6 +3,8 @@ from modeltranslation.translator import TranslationOptions, register
 from .models import (
     AboutBlock,
     AboutSection,
+    AchievementGalleryItem,
+    Award,
     BannerSlide,
     BusinessCategory,
     BusinessField,
@@ -193,4 +195,15 @@ class BusinessFieldServiceTranslationOptions(TranslationOptions):
 
 @register(BusinessFieldGallery)
 class BusinessFieldGalleryTranslationOptions(TranslationOptions):
+    fields = ("alt",)
+
+
+# ==================== ACHIEVEMENTS PAGE ====================
+@register(Award)
+class AwardTranslationOptions(TranslationOptions):
+    fields = ("title", "organization", "description")
+
+
+@register(AchievementGalleryItem)
+class AchievementGalleryItemTranslationOptions(TranslationOptions):
     fields = ("alt",)

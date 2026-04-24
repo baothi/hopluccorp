@@ -43,8 +43,12 @@ class Command(BaseCommand):
         call_command("seed_business_fields", "--reset", stdout=self.stdout, stderr=self.stderr)
 
         # 9. Seed SEO
-        self.stdout.write(self.style.HTTP_INFO("\n[9/9] Seeding SEO metadata..."))
+        self.stdout.write(self.style.HTTP_INFO("\n[9/10] Seeding SEO metadata..."))
         call_command("seed_seo", stdout=self.stdout, stderr=self.stderr)
+
+        # 10. Seed achievements
+        self.stdout.write(self.style.HTTP_INFO("\n[10/10] Seeding achievements page..."))
+        call_command("seed_achievements", "--reset", stdout=self.stdout, stderr=self.stderr)
 
         self.stdout.write(self.style.SUCCESS("\n" + "=" * 50))
         self.stdout.write(self.style.SUCCESS("ALL seeds completed successfully!"))

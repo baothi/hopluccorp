@@ -8,6 +8,8 @@ from ordered_model.admin import OrderedModelAdmin
 from .models import (
     AboutBlock,
     AboutSection,
+    AchievementGalleryItem,
+    Award,
     BannerSlide,
     BusinessCategory,
     BusinessField,
@@ -488,6 +490,26 @@ class BusinessFieldAdmin(ImagePreviewMixin, TranslationAdmin):
         return "-"
 
     image_preview.short_description = "Preview"
+
+
+# ==================== ACHIEVEMENTS PAGE ====================
+@admin.register(Award)
+class AwardAdmin(ImagePreviewMixin, TranslationAdmin):
+    list_display = ["year", "title", "organization", "image_preview", "is_active", "order"]
+    list_filter = ["year", "is_active"]
+    list_editable = ["is_active"]
+    search_fields = ["title_vi", "title_en", "organization_vi"]
+    ordering = ["-year", "order"]
+
+    def get_prepopulated_fields(self, request, obj=None):
+        return {}
+
+
+@admin.register(AchievementGalleryItem)
+class AchievementGalleryItemAdmin(ImagePreviewMixin, TranslationAdmin, OrderedModelAdmin):
+    list_display = ["alt", "image_preview", "is_active", "order", "move_up_down_links"]
+    list_editable = ["is_active"]
+    ordering = ["order"]
 
 
 # ==================== CONTACT SUBMISSIONS ====================

@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     AboutPageView,
+    AchievementsPageView,
     BusinessFieldDetailView,
     ContactPageView,
     ContactSubmitView,
@@ -28,6 +29,7 @@ urlpatterns = [
     path("news/<str:slug>/", NewsDetailView.as_view(), name="news-detail"),
     path("seo/<str:page_key>/", PageSEOView.as_view(), name="page-seo"),
     path("business-fields/<slug:slug>/", BusinessFieldDetailView.as_view(), name="business-field-detail"),
+    path("achievements/", AchievementsPageView.as_view(), name="achievements"),
     path("contact/", ContactPageView.as_view(), name="contact"),
     path("contact/submit/", ContactSubmitView.as_view(), name="contact-submit"),
 ]

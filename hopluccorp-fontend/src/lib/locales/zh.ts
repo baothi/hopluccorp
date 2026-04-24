@@ -80,6 +80,15 @@ const zh = {
   // Organization Page
   'organization.gallery': '图片库',
 
+  // Achievements Page
+  'achievements.title': '荣誉',
+  'achievements.titleHighlight': '成就',
+  'achievements.awards': '奖项与认证',
+  'achievements.gallery': '图片库',
+  'achievements.noAwards': '信息正在更新中。',
+  'achievements.year': '年份',
+  'achievements.issuedBy': '颁发单位：',
+
   // About Page
   'about.history': '历史',
   'about.historyHighlight': '发展历程',
