@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.HTTP_INFO("=" * 50))
-        self.stdout.write(self.style.HTTP_INFO("Running ALL seeds (reset + create)"))
+        self.stdout.write(self.style.HTTP_INFO("Running ALL seeds (reset + create) [11 steps]"))
         self.stdout.write(self.style.HTTP_INFO("=" * 50))
 
         # 1. Seed users
@@ -47,8 +47,12 @@ class Command(BaseCommand):
         call_command("seed_seo", stdout=self.stdout, stderr=self.stderr)
 
         # 10. Seed achievements
-        self.stdout.write(self.style.HTTP_INFO("\n[10/10] Seeding achievements page..."))
+        self.stdout.write(self.style.HTTP_INFO("\n[10/11] Seeding achievements page..."))
         call_command("seed_achievements", "--reset", stdout=self.stdout, stderr=self.stderr)
+
+        # 11. Seed careers
+        self.stdout.write(self.style.HTTP_INFO("\n[11/11] Seeding careers page..."))
+        call_command("seed_careers", "--reset", stdout=self.stdout, stderr=self.stderr)
 
         self.stdout.write(self.style.SUCCESS("\n" + "=" * 50))
         self.stdout.write(self.style.SUCCESS("ALL seeds completed successfully!"))

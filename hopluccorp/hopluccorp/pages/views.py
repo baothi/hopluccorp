@@ -12,10 +12,14 @@ from .models import (
     BannerSlide,
     BusinessCategory,
     BusinessField,
+    CareerCompany,
+    CareersPage,
     ContactSubmission,
     CoreValue,
+    CulturePhoto,
     HistoryItem,
     HumanResources,
+    JobPosting,
     LeaderMessage,
     LeadershipMember,
     ManagementSystem,
@@ -35,14 +39,19 @@ from .models import (
     StatItem,
     VideoSection,
     VisionMission,
+    WorkBenefitItem,
 )
 from .serializers import (
     AboutPageSerializer,
     AchievementsPageSerializer,
     BusinessFieldDetailSerializer,
+    CareersPageSerializer,
     ContactPageSerializer,
     ContactSubmissionSerializer,
     HomepageSerializer,
+    JobApplicationSerializer,
+    JobPostingDetailSerializer,
+    JobPostingListSerializer,
     NewsArticleDetailSerializer,
     NewsCategorySerializer,
     NewsArticleListSerializer,
@@ -353,3 +362,124 @@ class AchievementsPageView(LangMixin, APIView):
         }
         serializer = AchievementsPageSerializer(data, context={"request": request})
         return Response(serializer.data)
+
+
+# ==================== CAREERS PAGE ====================
+class CareersPageView(LangMixin, APIView):
+    """
+    GET /api/pages/careers/?lang=vi
+    GET /api/pages/careers/?lang=vi&company=hop-luc-corp&province=H%C3%A0+N%E1%BB%99i&keyword=k%E1%BB%B9+s%C6%B0&page=1
+    Returns page config, culture photos, benefits, companies, and paginated job list.
+    """
+
+    permission_classes = [AllowAny]
+    PAGE_SIZE = 9
+
+    def get(self, request):
+        self.activate_lang(request)
+
+        jobs = JobPosting.objects.filter(is_active=True).select_related("company")
+
+        # -- Filters --
+        company_slug = request.query_params.get("company", "").strip()
+        province = request.query_params.get("province", "").strip()
+        keyword = request.query_params.get("keyword", "").strip()
+
+        if company_slug:
+            jobs = jobs.filter(company__slug=company_slug)
+        if province:
+            jobs = jobs.filter(province__iexact=province)
+        if keyword:
+            jobs = jobs.filter(title__icontains=keyword)
+
+        # -- Pagination --
+        total_count = jobs.count()
+        try:
+            page = max(1, int(request.query_params.get("page", 1)))
+        except (ValueError, TypeError):
+            page = 1
+        page_size = self.PAGE_SIZE
+        total_pages = max(1, (total_count + page_size - 1) // page_size)
+        offset = (page - 1) * page_size
+        jobs_page = jobs[offset: offset + page_size]
+
+        # -- Provinces list (all active jobs, not filtered) --
+        all_provinces = (
+            JobPosting.objects.filter(is_active=True)
+            .exclude(province="")
+            .values_list("province", flat=True)
+            .distinct()
+            .order_by("province")
+        )
+
+        data = {
+            "page_config": CareersPage.objects.first(),
+            "culture_photos": CulturePhoto.objects.filter(is_active=True),
+            "benefits": WorkBenefitItem.objects.filter(is_active=True),
+            "companies": CareerCompany.objects.filter(is_active=True),
+            "jobs": jobs_page,
+            "total_count": total_count,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "provinces": list(all_provinces),
+        }
+        serializer = CareersPageSerializer(data, context={"request": request})
+        return Response(serializer.data)
+
+
+class JobDetailView(LangMixin, APIView):
+    """
+    GET /api/pages/careers/<slug>/?lang=vi
+    Returns full job detail + 3 related jobs from the same company.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, slug):
+        self.activate_lang(request)
+        try:
+            job = JobPosting.objects.select_related("company").get(slug=slug, is_active=True)
+        except JobPosting.DoesNotExist:
+            return Response({"detail": "Not found."}, status=404)
+
+        # Related jobs: same company, exclude current, max 3
+        related_qs = (
+            JobPosting.objects.filter(is_active=True)
+            .select_related("company")
+            .exclude(pk=job.pk)
+        )
+        if job.company:
+            related_qs = related_qs.filter(company=job.company)
+        related = related_qs[:3]
+
+        job_data = JobPostingDetailSerializer(job, context={"request": request}).data
+        related_data = JobPostingListSerializer(related, many=True, context={"request": request}).data
+        return Response({"job": job_data, "related_jobs": related_data})
+
+
+class JobApplicationSubmitView(LangMixin, APIView):
+    """
+    POST /api/pages/careers/apply/
+    Submit a job application form.
+    Supports multipart/form-data for cv_file upload.
+    """
+
+    permission_classes = [AllowAny]
+
+    SUCCESS_MESSAGES = {
+        "vi": "Nộp đơn ứng tuyển thành công! Chúng tôi sẽ liên hệ với bạn sớm.",
+        "en": "Your application has been submitted successfully! We will contact you soon.",
+        "zh-hans": "您的申请已成功提交！我们将尽快与您联系。",
+        "ko": "지원서가 성공적으로 제출되었습니다! 곧 연락드리겠습니다.",
+    }
+
+    def post(self, request):
+        lang = self.activate_lang(request)
+        serializer = JobApplicationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"detail": self.SUCCESS_MESSAGES.get(lang, self.SUCCESS_MESSAGES["vi"])},
+            status=201,
+        )

@@ -15,11 +15,16 @@ from .models import (
     BusinessField,
     BusinessFieldGallery,
     BusinessFieldService,
+    CareerCompany,
+    CareersPage,
     Certificate,
     ContactSubmission,
     CoreValue,
+    CulturePhoto,
     HistoryItem,
     HumanResources,
+    JobApplication,
+    JobPosting,
     LeaderMessage,
     LeadershipMember,
     ManagementSystem,
@@ -40,6 +45,7 @@ from .models import (
     StatItem,
     VideoSection,
     VisionMission,
+    WorkBenefitItem,
 )
 
 
@@ -510,6 +516,169 @@ class AchievementGalleryItemAdmin(ImagePreviewMixin, TranslationAdmin, OrderedMo
     list_display = ["alt", "image_preview", "is_active", "order", "move_up_down_links"]
     list_editable = ["is_active"]
     ordering = ["order"]
+
+
+# ==================== CAREERS PAGE ====================
+
+@admin.register(CareerCompany)
+class CareerCompanyAdmin(ImagePreviewMixin, TranslationAdmin, OrderedModelAdmin):
+    list_display = ["name", "slug", "image_preview", "is_active", "move_up_down_links"]
+    list_editable = ["is_active"]
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ["order"]
+
+
+@admin.register(CareersPage)
+class CareersPageAdmin(SingletonAdminMixin, TranslationAdmin):
+    fieldsets = (
+        ("Banner", {
+            "fields": ("banner_image", "banner_title"),
+        }),
+        ("Phần Văn hóa", {
+            "fields": ("culture_video_url", "culture_title", "culture_subtitle"),
+        }),
+    )
+
+
+@admin.register(CulturePhoto)
+class CulturePhotoAdmin(ImagePreviewMixin, TranslationAdmin, OrderedModelAdmin):
+    list_display = ["alt", "image_preview", "is_active", "move_up_down_links"]
+    list_editable = ["is_active"]
+    ordering = ["order"]
+
+
+@admin.register(WorkBenefitItem)
+class WorkBenefitItemAdmin(ImagePreviewMixin, TranslationAdmin, OrderedModelAdmin):
+    list_display = ["title", "icon_type", "icon_text", "image_preview", "is_active", "move_up_down_links"]
+    list_editable = ["is_active"]
+    ordering = ["order"]
+    fieldsets = (
+        (None, {
+            "fields": ("title", "description", "is_active"),
+        }),
+        ("Icon", {
+            "fields": ("icon_type", "icon_text", "icon_image"),
+            "description": "Chọn icon_type=text rồi điền icon_text, hoặc icon_type=image rồi upload icon_image",
+        }),
+    )
+
+
+class JobPostingForm(forms.ModelForm):
+    class Meta:
+        model = JobPosting
+        fields = "__all__"
+        widgets = {
+            "benefits_content_vi": CKEditor5Widget(config_name="default"),
+            "benefits_content_en": CKEditor5Widget(config_name="default"),
+            "benefits_content_zh_hans": CKEditor5Widget(config_name="default"),
+            "benefits_content_ko": CKEditor5Widget(config_name="default"),
+            "job_description_vi": CKEditor5Widget(config_name="default"),
+            "job_description_en": CKEditor5Widget(config_name="default"),
+            "job_description_zh_hans": CKEditor5Widget(config_name="default"),
+            "job_description_ko": CKEditor5Widget(config_name="default"),
+            "requirements_vi": CKEditor5Widget(config_name="default"),
+            "requirements_en": CKEditor5Widget(config_name="default"),
+            "requirements_zh_hans": CKEditor5Widget(config_name="default"),
+            "requirements_ko": CKEditor5Widget(config_name="default"),
+            "how_to_apply_vi": CKEditor5Widget(config_name="default"),
+            "how_to_apply_en": CKEditor5Widget(config_name="default"),
+            "how_to_apply_zh_hans": CKEditor5Widget(config_name="default"),
+            "how_to_apply_ko": CKEditor5Widget(config_name="default"),
+        }
+
+
+@admin.register(JobPosting)
+class JobPostingAdmin(TranslationAdmin):
+    form = JobPostingForm
+    list_display = ["title", "company", "quantity", "province", "is_active", "published_at", "application_count"]
+    list_filter = ["company", "province", "is_active", "published_at"]
+    list_editable = ["is_active"]
+    search_fields = ["title_vi", "title_en", "province"]
+    date_hierarchy = "published_at"
+    fieldsets = (
+        ("Thông tin cơ bản", {
+            "fields": ("title", "company", "quantity", "province", "location_display", "is_active", "published_at"),
+        }),
+        ("Metadata tuyển dụng", {
+            "fields": ("level", "industry", "skills", "resume_language"),
+        }),
+        ("Nội dung (VI)", {
+            "fields": (
+                "benefits_content_vi",
+                "job_description_vi",
+                "requirements_vi",
+                "how_to_apply_vi",
+            ),
+            "classes": ("collapse",),
+        }),
+        ("Nội dung (EN)", {
+            "fields": (
+                "benefits_content_en",
+                "job_description_en",
+                "requirements_en",
+                "how_to_apply_en",
+            ),
+            "classes": ("collapse",),
+        }),
+        ("Nội dung (ZH)", {
+            "fields": (
+                "benefits_content_zh_hans",
+                "job_description_zh_hans",
+                "requirements_zh_hans",
+                "how_to_apply_zh_hans",
+            ),
+            "classes": ("collapse",),
+        }),
+        ("Nội dung (KO)", {
+            "fields": (
+                "benefits_content_ko",
+                "job_description_ko",
+                "requirements_ko",
+                "how_to_apply_ko",
+            ),
+            "classes": ("collapse",),
+        }),
+    )
+
+    def get_prepopulated_fields(self, request, obj=None):
+        return {}
+
+    @admin.display(description="Đơn ứng tuyển")
+    def application_count(self, obj):
+        count = obj.applications.count()
+        return format_html(
+            '<a href="/admin/pages/jobapplication/?job__id__exact={}">{} đơn</a>',
+            obj.pk, count,
+        )
+
+
+@admin.register(JobApplication)
+class JobApplicationAdmin(admin.ModelAdmin):
+    list_display = [
+        "fullname", "email", "phone", "position",
+        "job_link", "sex", "is_read", "created_at",
+    ]
+    list_filter = ["is_read", "sex", "created_at", "job__company"]
+    search_fields = ["fullname", "email", "phone", "position", "address"]
+    readonly_fields = [
+        "fullname", "email", "phone", "birthday", "sex",
+        "nationality", "address", "position", "cv_file",
+        "job", "created_at",
+    ]
+    list_editable = ["is_read"]
+    ordering = ["-created_at"]
+
+    def has_add_permission(self, request):
+        return False
+
+    @admin.display(description="Vị trí")
+    def job_link(self, obj):
+        if obj.job:
+            return format_html(
+                '<a href="/admin/pages/jobposting/{}/change/">{}</a>',
+                obj.job.pk, obj.job.title,
+            )
+        return "— (chung)"
 
 
 # ==================== CONTACT SUBMISSIONS ====================

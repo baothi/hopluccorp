@@ -2,6 +2,15 @@ from django.db import models
 from django.utils.text import slugify
 from ordered_model.models import OrderedModel
 
+try:
+    # Dùng RawMediaCloudinaryStorage cho file tài liệu (PDF/DOC).
+    # RawMediaCloudinaryStorage upload file thô, không qua image pipeline của Cloudinary.
+    # Fallback về storage mặc định nếu cloudinary_storage chưa được cài (VD: test local).
+    from cloudinary_storage.storage import RawMediaCloudinaryStorage as _RawStorage
+    _cv_storage = _RawStorage()
+except ImportError:
+    _cv_storage = None  # type: ignore[assignment]
+
 
 # ==================== SITE CONFIG ====================
 class SiteConfig(models.Model):
@@ -746,6 +755,204 @@ class AchievementGalleryItem(OrderedModel):
 
     def __str__(self):
         return self.alt or f"Gallery #{self.order}"
+
+
+# ==================== CAREERS PAGE ====================
+class CareerCompany(OrderedModel):
+    """Công ty thành viên tuyển dụng."""
+
+    name = models.CharField(max_length=255, help_text="Tên công ty")
+    slug = models.SlugField(max_length=255, unique=True, help_text="VD: hop-luc-corp")
+    logo = models.ImageField(upload_to="careers/companies/", blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_career_companies"
+        verbose_name = "㉕ Công ty tuyển dụng"
+        verbose_name_plural = "㉕ Công ty tuyển dụng"
+
+    def __str__(self):
+        return self.name
+
+
+class CareersPage(models.Model):
+    """Cấu hình trang Tuyển Dụng (singleton)."""
+
+    banner_image = models.ImageField(upload_to="careers/banners/", blank=True)
+    banner_title = models.CharField(max_length=255, blank=True, default="TUYỂN DỤNG")
+    culture_video_url = models.URLField(blank=True, default="", help_text="YouTube embed URL")
+    culture_title = models.CharField(max_length=255, blank=True, default="Văn hóa Hợp Lực")
+    culture_subtitle = models.TextField(blank=True, default="")
+
+    class Meta:
+        db_table = "pages_careers_page"
+        verbose_name = "㉖ Trang Tuyển Dụng (cấu hình)"
+        verbose_name_plural = "㉖ Trang Tuyển Dụng (cấu hình)"
+
+    def __str__(self):
+        return "Cấu hình trang Tuyển Dụng"
+
+
+class CulturePhoto(OrderedModel):
+    """Ảnh văn hóa công ty — trang Tuyển Dụng."""
+
+    image = models.ImageField(upload_to="careers/culture/", blank=True)
+    alt = models.CharField(max_length=255, blank=True, default="")
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_culture_photos"
+        verbose_name = "㉗ Ảnh văn hóa"
+        verbose_name_plural = "㉗ Ảnh văn hóa"
+
+    def __str__(self):
+        return self.alt or f"Culture photo #{self.order}"
+
+
+class WorkBenefitItem(OrderedModel):
+    """Thẻ phúc lợi — trang Tuyển Dụng (VD: 14 năm kinh nghiệm, lương thưởng, thăng tiến)."""
+
+    ICON_TYPE_TEXT = "text"
+    ICON_TYPE_IMAGE = "image"
+    ICON_TYPE_CHOICES = [
+        (ICON_TYPE_TEXT, "Text (VD: '14 năm')"),
+        (ICON_TYPE_IMAGE, "Ảnh icon"),
+    ]
+
+    icon_type = models.CharField(max_length=10, choices=ICON_TYPE_CHOICES, default=ICON_TYPE_TEXT)
+    icon_text = models.CharField(max_length=100, blank=True, default="", help_text="Dùng khi icon_type=text")
+    icon_image = models.ImageField(upload_to="careers/benefits/", blank=True, help_text="Dùng khi icon_type=image")
+    title = models.CharField(max_length=255, help_text="Tiêu đề thẻ")
+    description = models.TextField(blank=True, default="", help_text="Mô tả")
+    is_active = models.BooleanField(default=True)
+
+    class Meta(OrderedModel.Meta):
+        db_table = "pages_work_benefits"
+        verbose_name = "㉘ Phúc lợi môi trường làm việc"
+        verbose_name_plural = "㉘ Phúc lợi môi trường làm việc"
+
+    def __str__(self):
+        return self.title
+
+
+class JobPosting(models.Model):
+    """Tin tuyển dụng."""
+
+    company = models.ForeignKey(
+        CareerCompany,
+        on_delete=models.SET_NULL,
+        related_name="job_postings",
+        null=True,
+        blank=True,
+        help_text="Công ty tuyển dụng",
+    )
+    title = models.CharField(max_length=500, help_text="Tên vị trí tuyển dụng")
+    slug = models.SlugField(max_length=500, unique=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1, help_text="Số lượng cần tuyển")
+    province = models.CharField(
+        max_length=100, blank=True, default="",
+        help_text="Tỉnh/thành để filter (VD: Hà Nội, TP. HCM)",
+    )
+    location_display = models.CharField(
+        max_length=500, blank=True, default="",
+        help_text="Nơi làm việc hiển thị đầy đủ (VD: Hà Nội — Văn phòng Hợp Lực Corp)",
+    )
+    benefits_content = models.TextField(blank=True, default="", help_text="Phúc lợi (HTML)")
+    job_description = models.TextField(blank=True, default="", help_text="Mô tả công việc (HTML)")
+    requirements = models.TextField(blank=True, default="", help_text="Yêu cầu (HTML)")
+    how_to_apply = models.TextField(blank=True, default="", help_text="Cách thức ứng tuyển (HTML)")
+    level = models.CharField(max_length=255, blank=True, default="", help_text="Cấp bậc")
+    industry = models.CharField(max_length=255, blank=True, default="", help_text="Ngành nghề")
+    skills = models.CharField(max_length=500, blank=True, default="", help_text="Kỹ năng")
+    resume_language = models.CharField(max_length=100, blank=True, default="", help_text="Ngôn ngữ hồ sơ")
+    is_active = models.BooleanField(default=True)
+    published_at = models.DateField(null=True, blank=True, help_text="Ngày đăng")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "pages_job_postings"
+        verbose_name = "㉙ Tin tuyển dụng"
+        verbose_name_plural = "㉙ Tin tuyển dụng"
+        ordering = ["-published_at", "-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from Vietnamese title
+        for lang in ("vi", "en", "zh_hans", "ko"):
+            title_field = f"title_{lang}"
+            slug_field = f"slug_{lang}"
+            title_val = getattr(self, title_field, None)
+            slug_val = getattr(self, slug_field, None)
+            if title_val and not slug_val:
+                base_slug = slugify(title_val, allow_unicode=True)
+                slug = base_slug
+                counter = 1
+                while JobPosting.objects.filter(**{slug_field: slug}).exclude(pk=self.pk).exists():
+                    slug = f"{base_slug}-{counter}"
+                    counter += 1
+                setattr(self, slug_field, slug)
+        # Fallback slug from title_vi
+        if not self.slug:
+            base_slug = slugify(getattr(self, "title_vi", None) or self.title, allow_unicode=True)
+            slug = base_slug
+            counter = 1
+            while JobPosting.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
+class JobApplication(models.Model):
+    """Đơn ứng tuyển từ ứng viên."""
+
+    SEX_MALE = "male"
+    SEX_FEMALE = "female"
+    SEX_OTHER = "other"
+    SEX_CHOICES = [
+        (SEX_MALE, "Nam"),
+        (SEX_FEMALE, "Nữ"),
+        (SEX_OTHER, "Khác"),
+    ]
+
+    job = models.ForeignKey(
+        JobPosting,
+        on_delete=models.SET_NULL,
+        related_name="applications",
+        null=True,
+        blank=True,
+        help_text="Tin tuyển dụng (để trống = nộp đơn chung)",
+    )
+    fullname = models.CharField(max_length=255, help_text="Họ và tên")
+    email = models.EmailField(help_text="Email")
+    phone = models.CharField(max_length=50, blank=True, default="", help_text="Số điện thoại")
+    birthday = models.DateField(null=True, blank=True, help_text="Ngày sinh")
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True, default="")
+    nationality = models.CharField(max_length=100, blank=True, default="", help_text="Quốc tịch")
+    address = models.TextField(blank=True, default="", help_text="Địa chỉ")
+    position = models.CharField(max_length=255, blank=True, default="", help_text="Vị trí ứng tuyển")
+    cv_file = models.FileField(
+        upload_to="careers/cv/",
+        # RawMediaCloudinaryStorage: upload file thô, không qua image pipeline.
+        # Đảm bảo PDF/DOC/DOCX được lưu đúng loại, không bị Cloudinary xử lý như ảnh.
+        storage=_cv_storage,
+        blank=True,
+        help_text="File CV (PDF/DOC/DOCX)",
+    )
+    is_read = models.BooleanField(default=False, help_text="HR đã xem")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "pages_job_applications"
+        verbose_name = "㉚ Đơn ứng tuyển"
+        verbose_name_plural = "㉚ Đơn ứng tuyển"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        job_str = f" → {self.job.title}" if self.job else " (chung)"
+        return f"{self.fullname} — {self.email}{job_str}"
 
 
 # ==================== CONTACT PAGE ====================

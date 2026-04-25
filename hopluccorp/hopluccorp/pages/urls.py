@@ -4,9 +4,12 @@ from .views import (
     AboutPageView,
     AchievementsPageView,
     BusinessFieldDetailView,
+    CareersPageView,
     ContactPageView,
     ContactSubmitView,
     HomepageView,
+    JobApplicationSubmitView,
+    JobDetailView,
     NewsCategoryListView,
     NewsDetailView,
     NewsListView,
@@ -32,4 +35,8 @@ urlpatterns = [
     path("achievements/", AchievementsPageView.as_view(), name="achievements"),
     path("contact/", ContactPageView.as_view(), name="contact"),
     path("contact/submit/", ContactSubmitView.as_view(), name="contact-submit"),
+    # Careers
+    path("careers/", CareersPageView.as_view(), name="careers-list"),
+    path("careers/apply/", JobApplicationSubmitView.as_view(), name="careers-apply"),
+    path("careers/<slug:slug>/", JobDetailView.as_view(), name="careers-detail"),
 ]

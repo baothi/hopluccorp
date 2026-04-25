@@ -9,6 +9,7 @@ import projectsReducer from './projects/projectsSlice';
 import businessFieldReducer from './businessField/businessFieldSlice';
 import contactReducer from './contact/contactSlice';
 import achievementsReducer from './achievements/achievementsSlice';
+import careersReducer from './careers/careersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     businessField: businessFieldReducer,
     contact: contactReducer,
     achievements: achievementsReducer,
+    careers: careersReducer,
   },
 });
 

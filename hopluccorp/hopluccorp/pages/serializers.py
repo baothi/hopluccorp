@@ -10,11 +10,16 @@ from .models import (
     BusinessField,
     BusinessFieldGallery,
     BusinessFieldService,
+    CareerCompany,
+    CareersPage,
     Certificate,
     ContactSubmission,
     CoreValue,
+    CulturePhoto,
     HistoryItem,
     HumanResources,
+    JobApplication,
+    JobPosting,
     LeaderMessage,
     LeadershipMember,
     ManagementSystem,
@@ -35,6 +40,7 @@ from .models import (
     StatItem,
     VideoSection,
     VisionMission,
+    WorkBenefitItem,
 )
 
 
@@ -395,3 +401,115 @@ class AchievementsPageSerializer(serializers.Serializer):
 
     awards = AwardSerializer(many=True)
     gallery = AchievementGalleryItemSerializer(many=True)
+
+
+# ==================== CAREERS PAGE ====================
+class CareerCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CareerCompany
+        fields = ["id", "name", "slug", "logo"]
+
+
+class CareersPageConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CareersPage
+        fields = [
+            "banner_image", "banner_title",
+            "culture_video_url", "culture_title", "culture_subtitle",
+        ]
+
+
+class CulturePhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CulturePhoto
+        fields = ["id", "image", "alt"]
+
+
+class WorkBenefitItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkBenefitItem
+        fields = ["id", "icon_type", "icon_text", "icon_image", "title", "description"]
+
+
+class JobPostingListSerializer(serializers.ModelSerializer):
+    """Dùng cho danh sách jobs (không có full content)."""
+
+    company = CareerCompanySerializer(read_only=True)
+
+    class Meta:
+        model = JobPosting
+        fields = [
+            "id", "title", "slug", "quantity",
+            "province", "location_display",
+            "level", "industry",
+            "company", "published_at",
+        ]
+
+
+class JobPostingDetailSerializer(serializers.ModelSerializer):
+    """Dùng cho trang chi tiết job — có đầy đủ nội dung."""
+
+    company = CareerCompanySerializer(read_only=True)
+
+    class Meta:
+        model = JobPosting
+        fields = [
+            "id", "title", "slug", "quantity",
+            "province", "location_display",
+            "benefits_content", "job_description",
+            "requirements", "how_to_apply",
+            "level", "industry", "skills", "resume_language",
+            "company", "published_at",
+        ]
+
+
+class CareersPageSerializer(serializers.Serializer):
+    """Aggregated careers list page data — single API call."""
+
+    page_config = CareersPageConfigSerializer()
+    culture_photos = CulturePhotoSerializer(many=True)
+    benefits = WorkBenefitItemSerializer(many=True)
+    companies = CareerCompanySerializer(many=True)
+    jobs = JobPostingListSerializer(many=True)
+    total_count = serializers.IntegerField()
+    page = serializers.IntegerField()
+    page_size = serializers.IntegerField()
+    total_pages = serializers.IntegerField()
+    provinces = serializers.ListField(child=serializers.CharField())
+
+
+class JobApplicationSerializer(serializers.ModelSerializer):
+    """Validate + tạo đơn ứng tuyển."""
+
+    class Meta:
+        model = JobApplication
+        fields = [
+            "id", "job",
+            "fullname", "email", "phone",
+            "birthday", "sex", "nationality",
+            "address", "position", "cv_file",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
+
+    def validate_cv_file(self, value):
+        if not value:
+            return value
+
+        # Giới hạn kích thước: 5 MB
+        max_size_bytes = 5 * 1024 * 1024
+        if value.size > max_size_bytes:
+            raise serializers.ValidationError(
+                "File CV không được vượt quá 5MB."
+            )
+
+        # Chỉ chấp nhận PDF, DOC, DOCX
+        import os
+        ext = os.path.splitext(value.name)[1].lower()
+        allowed_extensions = {".pdf", ".doc", ".docx"}
+        if ext not in allowed_extensions:
+            raise serializers.ValidationError(
+                "Chỉ chấp nhận định dạng PDF, DOC, DOCX."
+            )
+
+        return value

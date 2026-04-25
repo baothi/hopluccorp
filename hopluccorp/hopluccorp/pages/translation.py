@@ -10,10 +10,14 @@ from .models import (
     BusinessField,
     BusinessFieldGallery,
     BusinessFieldService,
+    CareerCompany,
+    CareersPage,
     Certificate,
     CoreValue,
+    CulturePhoto,
     HistoryItem,
     HumanResources,
+    JobPosting,
     LeaderMessage,
     LeadershipMember,
     ManagementSystem,
@@ -34,6 +38,7 @@ from .models import (
     StatItem,
     VideoSection,
     VisionMission,
+    WorkBenefitItem,
 )
 
 
@@ -207,3 +212,41 @@ class AwardTranslationOptions(TranslationOptions):
 @register(AchievementGalleryItem)
 class AchievementGalleryItemTranslationOptions(TranslationOptions):
     fields = ("alt",)
+
+
+# ==================== CAREERS PAGE ====================
+@register(CareerCompany)
+class CareerCompanyTranslationOptions(TranslationOptions):
+    fields = ("name",)
+
+
+@register(CareersPage)
+class CareersPageTranslationOptions(TranslationOptions):
+    fields = ("banner_title", "culture_title", "culture_subtitle")
+
+
+@register(CulturePhoto)
+class CulturePhotoTranslationOptions(TranslationOptions):
+    fields = ("alt",)
+
+
+@register(WorkBenefitItem)
+class WorkBenefitItemTranslationOptions(TranslationOptions):
+    fields = ("title", "description")
+
+
+@register(JobPosting)
+class JobPostingTranslationOptions(TranslationOptions):
+    fields = (
+        "title",
+        "slug",
+        "location_display",
+        "benefits_content",
+        "job_description",
+        "requirements",
+        "how_to_apply",
+        "level",
+        "industry",
+        "skills",
+        "resume_language",
+    )
